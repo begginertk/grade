@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>成績アドバイイザー</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 30px; }
+    .step { display: none; }
+    .step.active { display: block; }
+    button { padding: 10px 20px; margin: 20px; font-size: 16px; }
+    .option-group { margin: 20px 0; }
+    label { display: block; margin: 8px; cursor: pointer; }
+    .error { color: red; margin-top: 10px; }
+    #result div { margin: 8px 0; } /* 改行を見やすく */
+  </style>
+</head>
+<body>
+  <h1>成績アドバイザー</h1>
+
+  <!-- Step 1 -->
+  <div class="step active" id="step1">
+    <h2>Step 1: 取りたい成績を選んでください</h2>
+    <div class="option-group">
+      <label><input type="radio" name="grade" value="S"> S</label>
+      <label><input type="radio" name="grade" value="A"> A</label>
+      <label><input type="radio" name="grade" value="B"> B</label>
+      <label><input type="radio" name="grade" value="C"> C</label>
+      <label><input type="radio" name="grade" value="D"> D</label>
+    </div>
+    <button onclick="validateStep1()">次へ</button>
+    <div id="error1" class="error"></div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step" id="step2">
+    <h2>Step 2: ランクアップ条件を選んでください<br><small>（どちらか片方だけ、あるいは両方もOK）</small></h2>
+    <div class="option-group">
+      <h3>⑥ or ⑦</h3>
+      <label><input type="radio" name="group1" value="1"> ⑥ 特別講義オンライン（+1）</label>
+      <label><input type="radio" name="group1" value="2"> ⑦ 特別講義教室（+2）</label>
+
+      <h3>⑧ or ⑨</h3>
+      <label><input type="radio" name="group2" value="1"> ⑧ 最終講義感想（+1）</label>
+      <label><input type="radio" name="group2" value="2"> ⑨ 質問チャット（+2）</label>
+    </div>
+    <button onclick="goToStep(3)">次へ</button>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="step" id="step3">
+    <h2>Step 3: 提出すべき課題</h2>
+    <div id="result"></div>
+    <button onclick="location.reload()">最初に戻る</button>
+  </div>
+
+  <script>
+    const baseTasks = {
+      1: "① 春学期の講義の感想約200字を提出",
+      2: "② 動画による1分PR",
+      3: "③ 春学期の講義の一部をvroidを用いて動画（5分ぐらい）にする",
+      4: "④ 講義で紹介したモデルを拡張する",
+      5: "⑤ 講義中に発言した人はいつどのような発言をしたかを約200字にまとめて提出"
+    };
+
+    function validateStep1() {
+      const sel = document.querySelector('input[name="grade"]:checked');
+      const err = document.getElementById("error1");
+      if (!sel) {
+        err.innerText = "⚠️ 成績を選択してください";
+        return;
+      }
+      err.innerText = "";
+      if (sel.value === "D") goToStep(3);
+      else goToStep(2);
+    }
+
+    function goToStep(n) {
+      document.querySelectorAll(".step").forEach(el => el.classList.remove("active"));
+      document.getElementById("step" + n).classList.add("active");
+      if (n === 3) showResult();
+    }
+
+    function showResult() {
+      const grade = document.querySelector('input[name="grade"]:checked').value;
+      const resultEl = document.getElementById("result");
+      resultEl.innerHTML = "";  // クリア
+
+      if (grade === "D") {
+        resultEl.innerHTML = "<div>何も提出しないでください。お疲れ様でした。</div>";
+        return;
+      }
+
+      let bonus = 0;
+      const g1 = document.querySelector('input[name="group1"]:checked');
+      const g2 = document.querySelector('input[name="group2"]:checked');
+      if (g1) bonus += (g1.value === "1" ? 1 : 2);
+      if (g2) bonus += (g2.value === "1" ? 1 : 2);
+      bonus = Math.min(bonus, 3);
+
+      const gradeMap = { C:0, B:1, A:2, S:3 };
+      const base = gradeMap[grade];
+      const req = Math.max(base - bonus, 0);
+
+      let candidates;
+      if (req === 0)      candidates = [1];
+      else if (req === 1) candidates = [2,3,4,5];
+      else if (req === 2) candidates = [3,4,5];
+      else if (req === 3) candidates = [5];
+
+      // 改行付きで出力
+      candidates.forEach(i => {
+        const div = document.createElement("div");
+        div.innerText = baseTasks[i] + " を行ってください。";
+        resultEl.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>
