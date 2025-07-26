@@ -36,7 +36,7 @@
       margin-right: 10px;
     }
     .grade-label {
-      margin-left: 6px; font-weight: bold; font-size: 30px;
+      margin-left: 6px; font-weight: bold; font-size: 24px;
     }
     .grade-S { color: red; }
     .grade-A { color: orange; }
@@ -108,24 +108,24 @@
       <h3>⑥ or ⑦</h3>
       <label><input type="radio" name="group1" value="1">
         <a href="https://lms.keio.jp/courses/112700/modules/items/5241473" target="_blank">
-          ⑥ 06/16の特別講義にオンラインで参加した感想約200字を提出
+          ⑥ 06/16の特別講義(オンライン参加)の感想約200字を提出
         </a>
       </label>
       <label><input type="radio" name="group1" value="2">
         <a href="https://lms.keio.jp/courses/112700/modules/items/5241474" target="_blank">
-          ⑦ 06/16の特別講義に教室で参加した感想約200字を提出
+          ⑦ 06/16の特別講義(教室参加)の感想約200字を提出
         </a>
       </label>
 
       <h3>⑧ or ⑨</h3>
       <label><input type="radio" name="group2" value="1">
         <a href="https://lms.keio.jp/courses/112700/modules/items/5241476" target="_blank">
-          ⑧ 07/21の講義に参加した感想約200字を提出
+          ⑧ 07/21の講義の感想約200字を提出
         </a>
       </label>
       <label><input type="radio" name="group2" value="2">
         <a href="https://lms.keio.jp/courses/112700/modules/items/5241477" target="_blank">
-          ⑨ 07/21の講義に参加してチャットに質問した人はその内容を提出
+          ⑨ 07/21の講義の質問の内容を提出
         </a>
       </label>
     </div>
@@ -183,23 +183,19 @@
 
     const ranks = ["D", "C", "B", "A", "S"];
 
-      function validateStep1() {
+       function validateStep1() {
       const sel = document.querySelector('input[name="grade"]:checked');
       const err = document.getElementById("error1");
-      if (!sel) { err.innerText = "⚠️ 成績を選択してください"; return; }
-      err.innerText = "";
-      const val = sel.value;
-      if (val === "C" || val === "D") {
-        goToStep(3);
-      } else {
-        goToStep(2);
-      }
+      if (!sel) { err.innerText="⚠️ 成績を選択してください"; return; }
+      err.innerText="";
+      if (sel.value==="C" || sel.value==="D") goToStep(3);
+      else goToStep(2);
     }
 
     function goToStep(n) {
-      document.querySelectorAll(".step").forEach(el => el.classList.remove("active"));
-      document.getElementById("step" + n).classList.add("active");
-      if (n === 3) showResult();
+      document.querySelectorAll(".step").forEach(el=>el.classList.remove("active"));
+      document.getElementById("step"+n).classList.add("active");
+      if (n===3) showResult();
     }
 
     function showResult() {
@@ -208,16 +204,28 @@
       const res = document.getElementById("result");
 
       res.innerHTML = "";
-      if (target === "C" || target === "D") {
+      // D の場合
+      if (target==="D") {
         res.innerHTML += `<div class="section">何も提出しないでください。お疲れ様でした。</div>`;
-        const graph = ranks.map(r =>
+        const graph = ranks.map(r=>
           `<span${r===target?` class="active-rank grade-${r}"`:``}>${r}</span>`
         ).join(" → ");
         res.innerHTML += `<div class="rank-graph">${graph}</div>`;
-        document.getElementById("step3-back").style.display = "none";
+        document.getElementById("step3-back").style.display="none";
         return;
       }
-
+      // C の場合
+      if (target==="C") {
+        // ①のみ表示
+        const t1 = baseTasks[1];
+        res.innerHTML += `<div class="section"><a href="${t1.url}" target="_blank">${t1.text}</a>（${t1.rank}）</div>`;
+        const graphC = ranks.map(r=>
+          `<span${r===target?` class="active-rank grade-${r}"`:``}>${r}</span>`
+        ).join(" → ");
+        res.innerHTML += `<div class="rank-graph">${graphC}</div>`;
+        document.getElementById("step3-back").style.display="none";
+        return;
+      }
 
       let bonus = 0, pls = [];
       ["group1", "group2"].forEach(g => {
