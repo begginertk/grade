@@ -13,8 +13,12 @@
       line-height: 1.5;
     }
     h1 {
-      font-size: 26px; /* 少し小さめ */
+      font-size: 24px; /* 少し小さく */
       margin-bottom: 10px;
+    }
+    h2 {
+      font-size: 20px; /* step1/2/3 共通 */
+      margin-bottom: 15px;
     }
     .step { display: none; }
     .step.active { display: block; }
@@ -67,17 +71,15 @@
       margin: 20px 0;
     }
     /* 目標成績だけ固有色 */
-    .color-D { color: #8B8B8B; }
-    .color-C { color: #D35400; }
-    .color-B { color: #3498DB; }
-    .color-A { color: #E74C3C; }
-    .color-S { color: #F39C12; }
+    .color-D { color: gray; }
+    .color-C { color: #3498db; }   /* 青系 */
+    .color-B { color: #2ecc71; }   /* 黄緑系 */
+    .color-A { color: #e67e22; }   /* オレンジ */
+    .color-S { color: #e84393; }   /* ピンク */
     .active-rank {
       font-weight: bold;
       text-decoration: underline;
     }
-    /* Step2 見出しをきれいに改行 */
-    .heading-line { display: block; }
   </style>
 </head>
 <body>
@@ -101,10 +103,7 @@
 
   <!-- Step 2 -->
   <div class="step" id="step2">
-    <h2>
-      <span class="heading-line">Step 2: ランクアップ条件</span>
-      <span class="heading-line">を選んでください</span>
-    </h2>
+    <h2>Step 2: ランクアップ条件を選んでください</h2>
     <div class="option-group">
       <h3>⑥ or ⑦</h3>
       <label>
@@ -145,19 +144,19 @@
     const baseTasks = {
       1: { text: "① 春学期の講義の感想約200字を提出", score: 1, rank: "C", url: "https://example.com/submit/reflection" },
       2: { text: "② 動画による1分PR", score: 2, rank: "B", url: "https://example.com/submit/pr-video" },
-      3: { text: "③ VRoidを用いた5分動画作成", score: 3, rank: "A", url: "https://example.com/submit/vroid-video" },
-      4: { text: "④ モデルを拡張する", score: 3, rank: "A", url: "https://example.com/submit/model-extension" },
-      5: { text: "⑤ 発言まとめ（約200字）を提出", score: 4, rank: "S", url: "https://example.com/submit/speech-summary" }
+      3: { text: "③ vroidを用いた5分動画作成", score: 3, rank: "A", url: "https://example.com/submit/vroid-video" },
+      4: { text: "④ モデルの拡張",         score: 3, rank: "A", url: "https://example.com/submit/model-extension" },
+      5: { text: "⑤ 講義中の発言の約200字のまとめ", score: 4, rank: "S", url: "https://example.com/submit/speech-summary" }
     };
 
     const plusItems = {
       group1: {
         1: { text: "⑥ 特別講義オンライン感想提出", up: 1, url: "https://example.com/submit/online" },
-        2: { text: "⑦ 特別講義教室感想提出",     up: 2, url: "https://example.com/submit/classroom" }
+        2: { text: "⑦ 特別講義教室感想提出",       up: 2, url: "https://example.com/submit/classroom" }
       },
       group2: {
-        1: { text: "⑧ 最終講義感想提出",       up: 1, url: "https://example.com/submit/final-reflection" },
-        2: { text: "⑨ 質問チャット提出",       up: 2, url: "https://example.com/submit/chat-question" }
+        1: { text: "⑧ 最終講義感想提出",         up: 1, url: "https://example.com/submit/final-reflection" },
+        2: { text: "⑨ 質問チャット提出",         up: 2, url: "https://example.com/submit/chat-question" }
       }
     };
 
@@ -176,7 +175,7 @@
     }
 
     function goToStep(n) {
-      document.querySelectorAll(".step").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".step").forEach(e => e.classList.remove("active"));
       document.getElementById("step" + n).classList.add("active");
       if (n === 3) showResult();
     }
@@ -187,16 +186,16 @@
       const res = document.getElementById("result");
       res.innerHTML = "";
 
-      // D の場合
       if (target === "D") {
+        // Dの場合
         res.innerHTML += `<div class="section">何も提出しないでください。お疲れ様でした。</div>`;
+        // グラフ
         const graphD = ranks
-          .map(r =>
-            `<span${r===target?' class="active-rank color-'+r+'"':''}>${r}</span>`
-          ).join(" → ");
+          .map(r => `<span${r===target?' class="active-rank color-'+r+'"':''}>${r}</span>`)
+          .join(" → ");
         res.innerHTML += `<div class="rank-graph">${graphD}</div>`;
       } else {
-        // 加点集計
+        // bonus
         let bonus = 0, plusLabels = [];
         ["group1","group2"].forEach(g => {
           const sel = document.querySelector(`input[name="${g}"]:checked`);
@@ -208,7 +207,7 @@
         });
         bonus = Math.min(bonus, 3);
 
-        // 基礎候補
+        // 基礎提出物
         const cands = Object.values(baseTasks)
           .filter(t => t.score <= targetIdx && t.score + bonus >= targetIdx);
 
@@ -224,9 +223,9 @@
         // S取得組み合わせ
         if (target === "S") {
           const combos = [
-            `③×2: <a href="${baseTasks[3].url}" target="_blank">③</a>＋<a href="${baseTasks[3].url}" target="_blank">③</a>`,
-            `④×2: <a href="${baseTasks[4].url}" target="_blank">④</a>＋<a href="${baseTasks[4].url}" target="_blank">④</a>`,
-            `③＋④: <a href="${baseTasks[3].url}" target="_blank">③</a>＋<a href="${baseTasks[4].url}" target="_blank">④</a>`
+            `<a href="${baseTasks[3].url}" target="_blank">③×2</a>: vroidを用いた5分動画作成 ×2`,
+            `<a href="${baseTasks[4].url}" target="_blank">④×2</a>: モデルの拡張 ×2`,
+            `<a href="${baseTasks[3].url}" target="_blank">③＋④</a>: vroid動画 ＋ モデルの拡張`
           ];
           res.innerHTML += `<div class="section"><b>組み合わせでS取得:</b><br>${combos.join("<br>")}</div>`;
         }
@@ -236,9 +235,9 @@
           (plusLabels.length ? plusLabels.join("<br>") : "なし") +
         `</div>`;
 
-        // 矢印グラフ：目標のみ色付き
+        // 矢印グラフ
         const graph = ranks
-          .map(r =>
+          .map(r => 
             r === target
               ? `<span class="active-rank color-${r}">${r}</span>`
               : `<span>${r}</span>`
@@ -247,12 +246,12 @@
         res.innerHTML += `<div class="section"><b>→ 目標の<span class="active-rank color-${target}">${target}</span>以上の成績を獲得できます！</b></div>`;
       }
 
-      // 戻るボタンの表示制御
+      // 「戻る」表示制御
       const backBtn = document.getElementById("step3-back");
       backBtn.style.display = (["C","D"].includes(target)) ? "none" : "inline-block";
     }
 
-    // Step2 ラジオトグル解除
+    // Step2 トグル解除
     let last1 = null, last2 = null;
     document.querySelectorAll('input[name="group1"]').forEach(radio => {
       radio.addEventListener('click', function() {
