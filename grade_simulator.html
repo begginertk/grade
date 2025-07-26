@@ -15,7 +15,7 @@
       color: #000;
     }
     h1 { font-size: 26px; margin-bottom: 10px; }
-    h2 { font-size: 17px; margin-bottom: 10px; }
+    h2 { font-size: 14px; margin-bottom: 10px; }
     .step { display: none; }
     .step.active { display: block; }
     .option-group {
@@ -26,17 +26,17 @@
     label {
       display: block;
       margin: 10px 0;
-      font-size: 18px;
+      font-size: 20px;
       cursor: pointer;
       color: #000;
     }
     input[type="radio"] {
       width: 1.6em; height: 1.6em;
       vertical-align: middle;
-      margin-right: 8px;
+      margin-right: 10px;
     }
     .grade-label {
-      margin-left: 6px; font-weight: bold;
+      margin-left: 6px; font-weight: bold; font-size: 30px;
     }
     .grade-S { color: red; }
     .grade-A { color: orange; }
@@ -183,17 +183,21 @@
 
     const ranks = ["D", "C", "B", "A", "S"];
 
-    function validateStep1() {
+      function validateStep1() {
       const sel = document.querySelector('input[name="grade"]:checked');
       const err = document.getElementById("error1");
       if (!sel) { err.innerText = "⚠️ 成績を選択してください"; return; }
       err.innerText = "";
-      if (sel.value === "C" || sel.value === "D") goToStep(3);
-      else goToStep(2);
+      const val = sel.value;
+      if (val === "C" || val === "D") {
+        goToStep(3);
+      } else {
+        goToStep(2);
+      }
     }
 
     function goToStep(n) {
-      document.querySelectorAll(".step").forEach(e => e.classList.remove("active"));
+      document.querySelectorAll(".step").forEach(el => el.classList.remove("active"));
       document.getElementById("step" + n).classList.add("active");
       if (n === 3) showResult();
     }
@@ -202,11 +206,13 @@
       const target = document.querySelector('input[name="grade"]:checked').value;
       const idx = ranks.indexOf(target);
       const res = document.getElementById("result");
-      res.innerHTML = "";
 
-      if (target === "D") {
+      res.innerHTML = "";
+      if (target === "C" || target === "D") {
         res.innerHTML += `<div class="section">何も提出しないでください。お疲れ様でした。</div>`;
-        const graph = ranks.map(r => `<span${r === target ? ` class="active-rank grade-${r}"` : ``}>${r}</span>`).join(" → ");
+        const graph = ranks.map(r =>
+          `<span${r===target?` class="active-rank grade-${r}"`:``}>${r}</span>`
+        ).join(" → ");
         res.innerHTML += `<div class="rank-graph">${graph}</div>`;
         document.getElementById("step3-back").style.display = "none";
         return;
