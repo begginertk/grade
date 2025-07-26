@@ -214,11 +214,16 @@
         document.getElementById("step3-back").style.display="none";
         return;
       }
-      // C の場合
+            // Cの場合
       if (target==="C") {
-        // ①のみ表示
+        // 基礎提出物①のみ
         const t1 = baseTasks[1];
-        res.innerHTML += `<div class="section"><a href="${t1.url}" target="_blank">${t1.text}</a>（${t1.rank}）</div>`;
+        res.innerHTML += `<div class="section"><b>基礎提出物の候補（①～⑤）:</b><br>` +
+          `<a href="${t1.url}" target="_blank">${t1.text}</a>（${t1.rank}）` +
+        `</div>`;
+        // ランクアップなし
+        res.innerHTML += `<div class="section"><b>ランクアップ:</b><br>なし</div>`;
+        // 数直線グラフ
         const graphC = ranks.map(r=>
           `<span${r===target?` class="active-rank grade-${r}"`:``}>${r}</span>`
         ).join(" → ");
@@ -226,6 +231,7 @@
         document.getElementById("step3-back").style.display="none";
         return;
       }
+
 
       let bonus = 0, pls = [];
       ["group1", "group2"].forEach(g => {
@@ -241,7 +247,7 @@
       const cands = Object.values(baseTasks)
         .filter(t => t.score <= idx && t.score + bonus >= idx);
 
-      res.innerHTML += `<div class="section"><b>基礎提出物（①～⑤）:</b><br>` +
+      res.innerHTML += `<div class="section"><b>基礎提出物の候補（①～⑤）:</b><br>` +
         (cands.length
           ? cands.map(t => `<a href="${t.url}" target="_blank">${t.text}</a>（${t.rank}）`).join("<br>")
           : "該当なし"
