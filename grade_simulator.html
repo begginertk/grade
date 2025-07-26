@@ -108,20 +108,22 @@
       <h3>⑥ or ⑦</h3>
       <label>
         <input type="radio" name="group1" value="1">
-        <a href="https://example.com/submit/online" target="_blank">⑥ 特別講義オンライン感想提出</a>
+        <a href="https://lms.keio.jp/courses/112700/modules/items/5241473" target="_blank">⑥ 06/16の特別講義にオンラインで参加した感想約200字を提出</a>
       </label>
       <label>
         <input type="radio" name="group1" value="2">
-        <a href="https://example.com/submit/classroom" target="_blank">⑦ 特別講義教室感想提出</a>
+        <a href="https://lms.keio.jp/courses/112700/modules/items/5241474" target="_blank">⑦ 06/16の特別講義に教室で参加した感想約200字を提出
+</a>
       </label>
       <h3>⑧ or ⑨</h3>
       <label>
         <input type="radio" name="group2" value="1">
-        <a href="https://example.com/submit/final-reflection" target="_blank">⑧ 最終講義感想提出</a>
+        <a href="https://lms.keio.jp/courses/112700/modules/items/5241476" target="_blank">⑧ 07/21の講義に参加した感想約200字を提出
+</a>
       </label>
       <label>
         <input type="radio" name="group2" value="2">
-        <a href="https://example.com/submit/chat-question" target="_blank">⑨ 質問チャット提出</a>
+        <a href="https://lms.keio.jp/courses/112700/modules/items/5241477" target="_blank">⑨ 07/21の講義に参加してチャットに質問した人はその内容を提出</a>
       </label>
     </div>
     <div class="button-group">
@@ -142,21 +144,21 @@
 
   <script>
     const baseTasks = {
-      1: { text: "① 春学期の講義の感想約200字を提出", score: 1, rank: "C", url: "https://example.com/submit/reflection" },
-      2: { text: "② 動画による1分PR", score: 2, rank: "B", url: "https://example.com/submit/pr-video" },
-      3: { text: "③ vroidを用いた5分動画作成", score: 3, rank: "A", url: "https://example.com/submit/vroid-video" },
-      4: { text: "④ モデルの拡張",         score: 3, rank: "A", url: "https://example.com/submit/model-extension" },
-      5: { text: "⑤ 講義中の発言の約200字のまとめ", score: 4, rank: "S", url: "https://example.com/submit/speech-summary" }
+      1: { text: "① 春学期の講義の感想約200字を提出", score: 1, rank: "C", url: "https://lms.keio.jp/courses/112700/modules/items/5241466" },
+      2: { text: "② 動画による1分PR", score: 2, rank: "B", url: "https://lms.keio.jp/courses/112700/modules/items/5241468" },
+      3: { text: "③ vroidを用いた5分動画作成", score: 3, rank: "A", url: "https://lms.keio.jp/courses/112700/modules/items/5241619" },
+      4: { text: "④ モデルの拡張",         score: 3, rank: "A", url: "https://lms.keio.jp/courses/112700/modules/items/5241619" },
+      5: { text: "⑤ 講義中の発言の約200字のまとめ", score: 4, rank: "S", url: "https://lms.keio.jp/courses/112700/modules/items/5241471" }
     };
 
     const plusItems = {
       group1: {
-        1: { text: "⑥ 特別講義オンライン感想提出", up: 1, url: "https://example.com/submit/online" },
-        2: { text: "⑦ 特別講義教室感想提出",       up: 2, url: "https://example.com/submit/classroom" }
+        1: { text: "⑥ 06/16の特別講義にオンラインで参加した感想約200字を提出", up: 1, url: "https://lms.keio.jp/courses/112700/modules/items/5241473" },
+        2: { text: "⑦ 06/16の特別講義に教室で参加した感想約200字を提出",       up: 2, url: "https://lms.keio.jp/courses/112700/modules/items/5241474" }
       },
       group2: {
-        1: { text: "⑧ 最終講義感想提出",         up: 1, url: "https://example.com/submit/final-reflection" },
-        2: { text: "⑨ 質問チャット提出",         up: 2, url: "https://example.com/submit/chat-question" }
+        1: { text: "⑧ 07/21の講義に参加した感想約200字を提出",         up: 1, url: "https://lms.keio.jp/courses/112700/modules/items/5241476" },
+        2: { text: "⑨ 07/21の講義に参加してチャットに質問した人はその内容を提出",         up: 2, url: "https://lms.keio.jp/courses/112700/modules/items/5241477" }
       }
     };
 
