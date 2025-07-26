@@ -2,23 +2,23 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>成績ナビ</title>
+  <title>成績シミュレーター</title>
   <style>
     body { font-family: sans-serif; text-align: center; padding: 30px; }
     .step { display: none; }
     .step.active { display: block; }
     button { padding: 10px 20px; margin: 20px; font-size: 16px; }
     .option-group { margin: 20px 0; }
-    label { display: block; margin: 8px; cursor: pointer; }
+    label { display: block; margin: 8px; cursor: pointer; text-align: left; }
     .error { color: red; margin-top: 10px; }
-    #result div { margin: 8px 0; }
-    .rank-graph { font-size: 1.5em; letter-spacing: 0.6em; margin-top: 18px; margin-bottom: 12px; }
+    #result div { margin: 8px 0; text-align: left; display: inline-block; }
+    .rank-graph { font-size: 1.5em; letter-spacing: 0.6em; margin: 20px 0; }
     .active-rank { color: #0066cc; font-weight: bold; border-bottom: 2px solid #0066cc; }
     .plus-rank { color: #0a0; font-weight: bold; }
   </style>
 </head>
 <body>
-  <h1>成績ナビ</h1>
+  <h1>成績シミュレーター</h1>
 
   <!-- Step 1 -->
   <div class="step active" id="step1">
@@ -65,34 +65,37 @@
   </div>
 
   <script>
-    // 提出物ごとの基礎ランク
+    // ①～⑤の基礎タスクとスコア／ランク
     const baseTasks = {
-      1: { text: "① 春学期の講義の感想約200字を提出", rank: "C", score: 0 },
-      2: { text: "② 動画による1分PR", rank: "B", score: 1 },
-      3: { text: "③ 春学期の講義の一部をvroidを用いて動画（5分ぐらい）にする", rank: "A", score: 2 },
-      4: { text: "④ 講義で紹介したモデルを拡張する", rank: "A", score: 2 },
-      5: { text: "⑤ 講義中に発言した人はいつどのような発言をしたかを約200字にまとめて提出", rank: "S", score: 3 }
+      1: { text: "① 春学期の講義の感想約200字を提出", score: 1, rank: "C" },
+      2: { text: "② 動画による1分PR", score: 2, rank: "B" },
+      3: { text: "③ 春学期の講義の一部をvroidを用いて動画（5分ぐらい）にする", score: 3, rank: "A" },
+      4: { text: "④ 講義で紹介したモデルを拡張する", score: 3, rank: "A" },
+      5: { text: "⑤ 講義中に発言した人はいつどのような発言をしたかを約200字にまとめて提出", score: 4, rank: "S" }
     };
 
-    // 加点項目
-    const plusItems = [
-      { group: "group1", label: "⑥ 06/16の特別講義にオンラインで参加した感想約200字を提出", up: 1 },
-      { group: "group1", label: "⑦ 06/16の特別講義に教室で参加した感想約200字を提出", up: 2 },
-      { group: "group2", label: "⑧ 07/21の講義に参加した感想約200字を提出", up: 1 },
-      { group: "group2", label: "⑨ 07/21の講義に参加してチャットに質問した内容を提出", up: 2 }
-    ];
+    // ⑥～⑨の加点項目
+    const plusItems = {
+      group1: {
+        1: { text: "⑥ 06/16の特別講義にオンラインで参加した感想約200字を提出", up: 1 },
+        2: { text: "⑦ 06/16の特別講義に教室で参加した感想約200字を提出",       up: 2 }
+      },
+      group2: {
+        1: { text: "⑧ 07/21の講義に参加した感想約200字を提出",                   up: 1 },
+        2: { text: "⑨ 07/21の講義に参加してチャットに質問した内容を提出",       up: 2 }
+      }
+    };
 
-    // ランク順
-    const ranks = ["D", "C", "B", "A", "S"];
+    // ランク順（index がスコアの基準）
+    const ranks = ["D","C","B","A","S"];
 
     function validateStep1() {
       const sel = document.querySelector('input[name="grade"]:checked');
-      const err = document.getElementById("error1");
       if (!sel) {
-        err.innerText = "⚠️ 成績を選択してください";
+        document.getElementById("error1").innerText = "⚠️ 成績を選択してください";
         return;
       }
-      err.innerText = "";
+      document.getElementById("error1").innerText = "";
       if (sel.value === "D") goToStep(3);
       else goToStep(2);
     }
@@ -104,94 +107,69 @@
     }
 
     function showResult() {
-      const grade = document.querySelector('input[name="grade"]:checked').value;
-      const resultEl = document.getElementById("result");
+      const targetRank = document.querySelector('input[name="grade"]:checked').value;
+      const targetIdx  = ranks.indexOf(targetRank);
+      const resultEl   = document.getElementById("result");
       resultEl.innerHTML = "";
 
-      if (grade === "D") {
+      // Dなら何もしない
+      if (targetRank === "D") {
         resultEl.innerHTML = "<div>何も提出しないでください。お疲れ様でした。</div>";
         return;
       }
 
-      // どの基礎提出パターンで到達するか（最小努力で到達できるパターンを表示）
-      // Step2の加点取得
-      let bonus = 0;
-      let plusLabels = [];
-      const g1 = document.querySelector('input[name="group1"]:checked');
-      const g2 = document.querySelector('input[name="group2"]:checked');
-      if (g1) {
-        const plus = plusItems.find(p => p.group === "group1" && g1.value == (p.up === 1 ? "1" : "2"));
-        if (plus) { bonus += plus.up; plusLabels.push(`${plus.label}（${plus.up}ランクアップ）`); }
-      }
-      if (g2) {
-        const plus = plusItems.find(p => p.group === "group2" && g2.value == (p.up === 1 ? "1" : "2"));
-        if (plus) { bonus += plus.up; plusLabels.push(`${plus.label}（${plus.up}ランクアップ）`); }
-      }
-      // 最大3ランクアップまで
+      // 加点合計を計算
+      let bonus = 0, plusLabels = [];
+      ["group1","group2"].forEach(g => {
+        const sel = document.querySelector(`input[name="${g}"]:checked`);
+        if (sel) {
+          const item = plusItems[g][sel.value];
+          bonus += item.up;
+          plusLabels.push(`${item.text}（${item.up}ランクアップ）`);
+        }
+      });
       bonus = Math.min(bonus, 3);
 
-      // 目標ランク
-      const gradeIdx = ranks.indexOf(grade);
+      // 候補タスク： baseScore <= targetIdx <= baseScore+bonus
+      const candidates = Object.keys(baseTasks)
+        .filter(i => {
+          const s = baseTasks[i].score;
+          return s <= targetIdx && s + bonus >= targetIdx;
+        })
+        .map(i => baseTasks[i]);
 
-      // 必要な基礎点（提出物）
-      let reqBase = Math.max(gradeIdx - bonus, 0);
+      // テキスト表示：①～⑤の候補のみ
+      const baseMsg  = candidates.length
+        ? candidates.map(t => `${t.text}（${t.rank}）`).join("<br>")
+        : "該当する提出物がありません";
 
-      // 提出物の候補を取得
-      let candidates;
-      if (reqBase === 0)      candidates = [1];
-      else if (reqBase === 1) candidates = [2,3,4,5];
-      else if (reqBase === 2) candidates = [3,4,5];
-      else if (reqBase === 3) candidates = [5];
-      // ランク表記のためscore利用
-      // 最小値の提出物を1つサンプル表示
-      const sampleTask = baseTasks[candidates[0]];
-
-      // Step3の詳細表示
-      // ①～⑤（成績）部分
-      let baseMsg = candidates.map(i =>
-        `${baseTasks[i].text}（${baseTasks[i].rank}）`
-      ).join("<br>");
-      // 加点部分
-      let plusMsg = plusLabels.length > 0
-        ? plusLabels.map(x => `${x}`).join("<br>")
+      const plusMsg = plusLabels.length
+        ? plusLabels.join("<br>")
         : "なし";
 
-      // 成績数直線イメージを作成
-      // 基礎提出物のランクを可視化→加点分をプラス色で表示→目標ランクは下線
-      let startIdx = Math.max(gradeIdx - bonus, 0);
-      let currentIdx = startIdx;
-      let rankGraph = "";
-      for (let i = 0; i <= 4; ++i) {
-        if (i === currentIdx && bonus > 0) {
-          // 基礎提出物のランク位置
-          rankGraph += `<span class="active-rank">${ranks[i]}</span>`;
-        } else if (i > currentIdx && i <= currentIdx + bonus) {
-          // 加点で上がった部分
-          rankGraph += `<span class="plus-rank">${ranks[i]}</span>`;
-        } else {
-          rankGraph += ranks[i];
-        }
-        if (i < 4) rankGraph += "―";
+      // 数直線グラフ
+      let graph = "";
+      // 現在ベース位置
+      const basePos = candidates.length
+        ? Math.min(...candidates.map(t => ranks.indexOf(t.rank)))
+        : 0;
+      for (let i = 0; i < ranks.length; i++) {
+        if (i === basePos) graph += `<span class="active-rank">${ranks[i]}</span>`;
+        else if (i > basePos && i <= basePos + bonus) graph += `<span class="plus-rank">${ranks[i]}</span>`;
+        else graph += ranks[i];
+        if (i < ranks.length - 1) graph += "―";
       }
-      // 目標ランクに下線
-      rankGraph = rankGraph.replace(
-        new RegExp(`(${grade})`),
+      // 目標下線
+      graph = graph.replace(
+        new RegExp(`(${targetRank})`),
         `<span class="active-rank">$1</span>`
       );
 
       resultEl.innerHTML = `
-      <div>
-        <b>あなたが提出するべき課題（基礎点）:</b><br>
-        ${baseMsg}<br><br>
-        <b>加点（ランクアップ要因）:</b><br>
-        ${plusMsg}
-      </div>
-      <div class="rank-graph" style="margin:20px 0;">
-        ${rankGraph}
-      </div>
-      <div>
-        <b>→ あなたは <span class="active-rank">${grade}</span> に到達できます！</b>
-      </div>
+        <div><b>基礎提出物候補:</b><br>${baseMsg}</div>
+        <div style="margin-top:12px;"><b>加点要因:</b><br>${plusMsg}</div>
+        <div class="rank-graph">${graph}</div>
+        <div><b>→ 目標の<span class="active-rank">${targetRank}</span>を獲得できます！</b></div>
       `;
     }
   </script>
