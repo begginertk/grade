@@ -83,6 +83,9 @@
     padding-bottom: 2px;
     font-weight: bold;
   }
+   /* ────────────────────────── */
+  /* Step3 の結果を中央寄せしつつ、
+     リスト項目は縦に並び、左端が揃うように */
   #step3 #result {
     text-align: center;
   }
@@ -93,6 +96,11 @@
     text-align: left;      /* セクション内は左揃え */
   }
 
+  /* ────────────────────────── */
+  /* D・C 用に付与する .centered クラスで完全中央揃え */
+  #step3 #result .section.centered {
+    text-align: center !important;
+  }
 
   
 </style>
@@ -222,7 +230,7 @@
       res.innerHTML = "";
       // D の場合
       if (target==="D") {
-        res.innerHTML += `<div class="section">何も提出しないでください。お疲れ様でした。</div>`;
+        res.innerHTML += `<div class="section centered">何も提出しないでください。お疲れ様でした。</div>`;
         const graph = ranks.map(r=>
           `<span${r===target?` class="active-rank grade-${r}"`:``}>${r}</span>`
         ).join(" → ");
@@ -234,7 +242,7 @@
       if (target==="C") {
         // 基礎提出物①のみ
         const t1 = baseTasks[1];
-        res.innerHTML += `<div class="section"><b>基礎提出物の候補（①～⑤）:</b><br>` +
+        res.innerHTML += `<div class="section centered"><b>基礎提出物の候補（①～⑤）:</b><br>` +
           `<a href="${t1.url}" target="_blank">${t1.text}</a>（${t1.rank}）` +
         `</div>`;
         // ランクアップなし
