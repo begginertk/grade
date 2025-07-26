@@ -11,16 +11,23 @@
     label { display: block; margin: 6px 0; cursor: pointer; }
     button { display: block; margin: 20px auto; padding: 10px 20px; font-size: 16px; }
     .error { color: red; margin-top: 10px; }
-    #result div { margin: 10px 0; text-align: left; display: inline-block; }
+    .section { margin: 15px 0; text-align: left; display: block; }
     .rank-graph { font-size: 1.5em; letter-spacing: 0.6em; margin: 20px 0; }
-    .active-rank { color: #0066cc; font-weight: bold; border-bottom: 2px solid #0066cc; }
-    .plus-rank { color: #0a0; font-weight: bold; }
+    /* ランク別カラー */
+    .rank-D { color: gray; }
+    .rank-C { color: orange; }
+    .rank-B { color: blue; }
+    .rank-A { color: purple; }
+    .rank-S { color: green; }
+    /* 選択・強調 */
+    .active-rank { font-weight: bold; border-bottom: 2px solid currentColor; }
+    .plus-rank { text-decoration: underline; }
   </style>
 </head>
 <body>
   <h1>成績シミュレーター</h1>
 
-  <!-- Step 1: 取りたい成績選択 -->
+  <!-- Step 1 -->
   <div class="step active" id="step1">
     <h2>Step 1: 取りたい成績を選んでください</h2>
     <div class="option-group">
@@ -34,14 +41,13 @@
     <div id="error1" class="error"></div>
   </div>
 
-  <!-- Step 2: ランクアップ条件選択 -->
+  <!-- Step 2 -->
   <div class="step" id="step2">
     <h2>Step 2: ランクアップ条件を選んでください</h2>
     <div class="option-group">
       <h3>⑥ or ⑦</h3>
       <label><input type="radio" name="group1" value="1"> ⑥ 06/16の特別講義にオンラインで参加した感想約200字を提出</label>
       <label><input type="radio" name="group1" value="2"> ⑦ 06/16の特別講義に教室で参加した感想約200字を提出</label>
-
       <h3>⑧ or ⑨</h3>
       <label><input type="radio" name="group2" value="1"> ⑧ 07/21の講義に参加した感想約200字を提出</label>
       <label><input type="radio" name="group2" value="2"> ⑨ 07/21の講義に参加してチャットに質問した内容を提出</label>
@@ -49,7 +55,7 @@
     <button onclick="goToStep(3)">次へ</button>
   </div>
 
-  <!-- Step 3: 提案＆到達グラフ -->
+  <!-- Step 3 -->
   <div class="step" id="step3">
     <h2>Step 3: 提出すべき課題と到達イメージ</h2>
     <div id="result"></div>
@@ -84,12 +90,8 @@
         return;
       }
       err.innerText = "";
-      // C または D は Step2 をスキップ
-      if (sel.value === "C" || sel.value === "D") {
-        goToStep(3);
-      } else {
-        goToStep(2);
-      }
+      if (sel.value === "C" || sel.value === "D") goToStep(3);
+      else goToStep(2);
     }
 
     function goToStep(n) {
@@ -104,11 +106,20 @@
       const res = document.getElementById("result");
       res.innerHTML = "";
 
+      // Dの場合
       if (target === "D") {
-        res.innerHTML = "<div>何も提出しないでください。お疲れ様でした。</div>";
+        // メッセージ
+        res.innerHTML += `<div>何も提出しないでください。お疲れ様でした。</div>`;
+        // 数直線グラフ（D位置のみ強調）
+        res.innerHTML += `<div class="rank-graph">` +
+          ranks.map((r,i) =>
+            `<span class="rank-${r}${i===0?' active-rank':''}">${r}</span>`
+          ).join("―") +
+        `</div>`;
         return;
       }
 
+      // 加点集計
       let bonus = 0, plusLabels = [];
       ["group1","group2"].forEach(g => {
         const sel = document.querySelector(`input[name="${g}"]:checked`);
@@ -120,60 +131,48 @@
       });
       bonus = Math.min(bonus, 3);
 
+      // 基礎候補
       const candidates = Object.values(baseTasks)
         .filter(t => t.score <= targetIdx && t.score + bonus >= targetIdx);
 
-      const baseMsg = candidates.length
-        ? candidates.map(t => `${t.text}（${t.rank}）`).join("<br>")
-        : "該当する提出物がありません";
+      // 表示ブロック
+      res.innerHTML += `<div class="section"><b>基礎提出物の候補（①～⑤）:</b><br>` +
+        (candidates.length
+          ? candidates.map(t=>`${t.text}（${t.rank}）`).join("<br>")
+          : "該当する提出物がありません") +
+      `</div>`;
 
-      const plusMsg = plusLabels.length
-        ? plusLabels.join("<br>")
-        : "なし";
+      res.innerHTML += `<div class="section"><b>ランクアップ:</b><br>` +
+        (plusLabels.length ? plusLabels.join("<br>") : "なし") +
+      `</div>`;
 
+      // 数直線
       const basePos = candidates.length
-        ? Math.min(...candidates.map(t => ranks.indexOf(t.rank)))
+        ? Math.min(...candidates.map(t=>ranks.indexOf(t.rank)))
         : 0;
-      let graph = "";
-      for (let i = 0; i < ranks.length; i++) {
-        if (i === basePos) graph += `<span class="active-rank">${ranks[i]}</span>`;
-        else if (i > basePos && i <= basePos + bonus) graph += `<span class="plus-rank">${ranks[i]}</span>`;
-        else graph += ranks[i];
-        if (i < ranks.length - 1) graph += "―";
-      }
-      graph = graph.replace(
-        new RegExp(`(${target})`),
-        `<span class="active-rank">$1</span>`
-      );
-
-      res.innerHTML = `
-        <div><b>基礎提出物の候補（①～⑤）:</b><br>${baseMsg}</div>
-        <div style="margin-top:12px;"><b>ランクアップ:</b><br>${plusMsg}</div>
-        <div class="rank-graph">${graph}</div>
-        <div><b>→ 目標の<span class="active-rank">${target}</span>を獲得できます！</b></div>
-      `;
+      let graph = ranks.map((r,i) => {
+        let cls = `rank-${r}`;
+        if (i===basePos) cls += " active-rank";
+        else if (i>basePos && i<=basePos+bonus) cls += " plus-rank";
+        return `<span class="${cls}">${r}</span>`;
+      }).join("―");
+      // 目標以上表記
+      res.innerHTML += `<div class="rank-graph">${graph}</div>`;
+      res.innerHTML += `<div><b>→ 目標の<span class="active-rank">${target}</span>以上の成績を獲得できます！</b></div>`;
     }
 
-    // Step2 のラジオをもう一度クリックで解除できるように
+    // Step2 のラジオをクリックでトグル解除
     let last1 = null, last2 = null;
-    document.querySelectorAll('input[name="group1"]').forEach(radio => {
-      radio.addEventListener('click', function() {
-        if (last1 === this) {
-          this.checked = false;
-          last1 = null;
-        } else {
-          last1 = this;
-        }
+    document.querySelectorAll('input[name="group1"]').forEach(radio=>{
+      radio.addEventListener('click',function(){
+        if(last1===this){ this.checked=false; last1=null; }
+        else last1=this;
       });
     });
-    document.querySelectorAll('input[name="group2"]').forEach(radio => {
-      radio.addEventListener('click', function() {
-        if (last2 === this) {
-          this.checked = false;
-          last2 = null;
-        } else {
-          last2 = this;
-        }
+    document.querySelectorAll('input[name="group2"]').forEach(radio=>{
+      radio.addEventListener('click',function(){
+        if(last2===this){ this.checked=false; last2=null; }
+        else last2=this;
       });
     });
   </script>
