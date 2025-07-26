@@ -70,37 +70,33 @@
   }
   .section {
     margin: 20px 0;
-    text-align: left;
-    display: block;
     font-size: 18px;
   }
+  {
+    text-align: center;
+  }
+  {
+    display: block;
+    max-width: 600px;
+    margin: 0 auto 20px;
+    text-align: left;
+  }
+    {
+    text-align: center;
+    }
   .rank-graph {
     font-size: 1.6em;
     margin: 20px 0;
+    max-width: 600px;
+    text-align: center;
   }
   .active-rank {
     border-bottom: 4px solid currentColor;
     padding-bottom: 2px;
     font-weight: bold;
   }
-   /* ────────────────────────── */
-  /* Step3 の結果を中央寄せしつつ、
-     リスト項目は縦に並び、左端が揃うように */
-  #step3 #result {
-    text-align: center;
-  }
-  #step3 #result .section {
-    display: block;
-    max-width: 600px;      /* お好みで調整 */
-    margin: 0 auto 20px;   /* セクションごと中央寄せ＋下マージン */
-    text-align: left;      /* セクション内は左揃え */
-  }
 
-  /* ────────────────────────── */
-  /* D・C 用に付与する .centered クラスで完全中央揃え */
-  #step3 #result .section.centered {
-    text-align: center !important;
-  }
+
 
   
 </style>
@@ -246,7 +242,7 @@
           `<a href="${t1.url}" target="_blank">${t1.text}</a>（${t1.rank}）` +
         `</div>`;
         // ランクアップなし
-        res.innerHTML += `<div class="section"><b>ランクアップ:</b><br>なし</div>`;
+        res.innerHTML += `<div class="section centered"><b>ランクアップ:</b><br>なし</div>`;
         // 数直線グラフ
         const graphC = ranks.map(r=>
           `<span${r===target?` class="active-rank grade-${r}"`:``}>${r}</span>`
