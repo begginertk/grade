@@ -320,12 +320,12 @@
       if (target==="C") {
         // 基礎提出物①のみ
         const t1 = baseTasks[1];
-        res.innerHTML += `<div class="section centered"><b>基礎提出物の候補（①～⑤）:</b><br>` +
+        res.innerHTML += `<div class="section"><b>基礎提出物の候補（①～⑤）:</b><br>` +
           `<a href="${t1.url}" target="_blank">${t1.text}</a>（${t1.rank}）` +
         `</div>`;
         // ランクアップなし
-        res.innerHTML += `<div class="section centered"><b>ランクアップ:</b><br>なし</div>`;
-          res.innerHTML += `<div class="section centered"><b>→ 目標の <span class="active-rank grade-${target}">${target}</span> を獲得できます！</b></div>`;
+        res.innerHTML += `<div class="section"><b>ランクアップ:</b><br>なし</div>`;
+          res.innerHTML += `<div class="section"><b>→ 目標の <span class="active-rank grade-${target}">${target}</span> を獲得できます！</b></div>`;
 
         // 数直線グラフ
         const graphC = ranks.map(r=>
