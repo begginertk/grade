@@ -12,6 +12,10 @@
       font-size: 18px;
       line-height: 1.5;
     }
+    h1 {
+      font-size: 26px; /* 少し小さめに調整 */
+      margin-bottom: 10px;
+    }
     .step { display: none; }
     .step.active { display: block; }
     .option-group {
@@ -47,7 +51,11 @@
     .button-group button:hover {
       background: #0055aa;
     }
-    .error { color: red; font-size: 16px; margin-top: 10px; }
+    .error {
+      color: red;
+      font-size: 16px;
+      margin-top: 10px;
+    }
     .section {
       margin: 20px 0;
       text-align: left;
@@ -58,8 +66,9 @@
       font-size: 1.6em;
       margin: 20px 0;
     }
-    /* 目標ランク強調 */
+    /* ランク色は削除、目標のみ赤強調 */
     .active-rank {
+      color: red;
       font-weight: bold;
       text-decoration: underline;
     }
@@ -70,7 +79,7 @@
 
   <!-- Step 1 -->
   <div class="step active" id="step1">
-    <h2>Step 1: 取りたい成績を選んでください</h2>
+    <h2>Step 1: 取りたい成績を選んでください</h2>
     <div class="option-group">
       <label><input type="radio" name="grade" value="S"> S</label>
       <label><input type="radio" name="grade" value="A"> A</label>
@@ -86,14 +95,26 @@
 
   <!-- Step 2 -->
   <div class="step" id="step2">
-    <h2>Step 2: ランクアップ条件を選んでください</h2>
+    <h2>Step 2: ランクアップ条件<br>を選んでください</h2>
     <div class="option-group">
-      <h3>⑥ or ⑦</h3>
-      <label><input type="radio" name="group1" value="1"> ⑥ 特別講義オンライン感想提出</label>
-      <label><input type="radio" name="group1" value="2"> ⑦ 特別講義教室感想提出</label>
-      <h3>⑧ or ⑨</h3>
-      <label><input type="radio" name="group2" value="1"> ⑧ 最終講義感想提出</label>
-      <label><input type="radio" name="group2" value="2"> ⑨ 質問チャット提出</label>
+      <h3>⑥ or ⑦</h3>
+      <label>
+        <input type="radio" name="group1" value="1">
+        <a href="https://example.com/submit/online" target="_blank">⑥ 特別講義オンライン感想提出</a>
+      </label>
+      <label>
+        <input type="radio" name="group1" value="2">
+        <a href="https://example.com/submit/classroom" target="_blank">⑦ 特別講義教室感想提出</a>
+      </label>
+      <h3>⑧ or ⑨</h3>
+      <label>
+        <input type="radio" name="group2" value="1">
+        <a href="https://example.com/submit/final-reflection" target="_blank">⑧ 最終講義感想提出</a>
+      </label>
+      <label>
+        <input type="radio" name="group2" value="2">
+        <a href="https://example.com/submit/chat-question" target="_blank">⑨ 質問チャット提出</a>
+      </label>
     </div>
     <div class="button-group">
       <button onclick="goToStep(1)">戻る</button>
@@ -103,7 +124,7 @@
 
   <!-- Step 3 -->
   <div class="step" id="step3">
-    <h2>Step 3: 課題から最終成績への流れ</h2>
+    <h2>Step 3: 出すべき課題と取れる成績</h2>
     <div id="result"></div>
     <div class="button-group">
       <button onclick="goToStep(2)">戻る</button>
@@ -113,29 +134,40 @@
 
   <script>
     const baseTasks = {
-      1: { text: "① 春学期の講義の感想約200字を提出", score: 1, url: "https://example.com/submit/reflection" },
-      2: { text: "② 動画による1分PR", score: 2, url: "https://example.com/submit/pr-video" },
-      3: { text: "③ VRoidを用いた5分動画作成", score: 3, url: "https://example.com/submit/vroid-video" },
-      4: { text: "④ モデルを拡張する", score: 3, url: "https://example.com/submit/model-extension" },
-      5: { text: "⑤ 発言まとめ（約200字）を提出", score: 4, url: "https://example.com/submit/speech-summary" }
+      1: { text: "① 春学期の講義の感想約200字を提出", score: 1, rank: "C", url: "https://example.com/submit/reflection" },
+      2: { text: "② 動画による1分PR", score: 2, rank: "B", url: "https://example.com/submit/pr-video" },
+      3: { text: "③ VRoidを用いた5分動画作成", score: 3, rank: "A", url: "https://example.com/submit/vroid-video" },
+      4: { text: "④ モデルを拡張する", score: 3, rank: "A", url: "https://example.com/submit/model-extension" },
+      5: { text: "⑤ 発言まとめ（約200字）を提出", score: 4, rank: "S", url: "https://example.com/submit/speech-summary" }
     };
+
     const plusItems = {
-      group1: { 1: { text: "⑥ 特別講義オンライン感想提出", up: 1 }, 2: { text: "⑦ 特別講義教室感想提出", up: 2 } },
-      group2: { 1: { text: "⑧ 最終講義感想提出", up: 1 }, 2: { text: "⑨ 質問チャット提出", up: 2 } }
+      group1: {
+        1: { text: "⑥ 特別講義オンライン感想提出", up: 1, url: "https://example.com/submit/online" },
+        2: { text: "⑦ 特別講義教室感想提出",     up: 2, url: "https://example.com/submit/classroom" }
+      },
+      group2: {
+        1: { text: "⑧ 最終講義感想提出",       up: 1, url: "https://example.com/submit/final-reflection" },
+        2: { text: "⑨ 質問チャット提出",       up: 2, url: "https://example.com/submit/chat-question" }
+      }
     };
+
     const ranks = ["D","C","B","A","S"];
 
     function validateStep1() {
       const sel = document.querySelector('input[name="grade"]:checked');
       const err = document.getElementById("error1");
-      if (!sel) { err.innerText = "⚠️ 成績を選択してください"; return; }
+      if (!sel) {
+        err.innerText = "⚠️ 成績を選択してください";
+        return;
+      }
       err.innerText = "";
       if (sel.value === "C" || sel.value === "D") goToStep(3);
       else goToStep(2);
     }
 
     function goToStep(n) {
-      document.querySelectorAll(".step").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".step").forEach(e => e.classList.remove("active"));
       document.getElementById("step" + n).classList.add("active");
       if (n === 3) showResult();
     }
@@ -146,50 +178,67 @@
       const res = document.getElementById("result");
       res.innerHTML = "";
 
+      // Dの場合
       if (target === "D") {
         res.innerHTML += `<div class="section">何も提出しないでください。お疲れ様でした。</div>`;
-        const graphD = ranks.map(r => `<span${r===`D`?` class="active-rank"`:``}>${r}</span>`).join(" → ");
+        const graphD = ranks
+          .map(r => `<span${r===target?' class="active-rank"':''}>${r}</span>`)
+          .join(" → ");
         res.innerHTML += `<div class="rank-graph">${graphD}</div>`;
         return;
       }
 
+      // 加点集計
       let bonus = 0, plusLabels = [];
       ["group1","group2"].forEach(g => {
         const sel = document.querySelector(`input[name="${g}"]:checked`);
         if (sel) {
           const it = plusItems[g][sel.value];
           bonus += it.up;
-          plusLabels.push(`${it.text}（${it.up}ランクアップ）`);
+          plusLabels.push(`<a href="${it.url}" target="_blank">${it.text}</a>（${it.up}ランクアップ）`);
         }
       });
       bonus = Math.min(bonus, 3);
 
-      const cands = Object.values(baseTasks).filter(t => t.score <= targetIdx && t.score + bonus >= targetIdx);
-      const combos = (target === "S") ? [[3,3],[4,4],[3,4]] : [];
+      // 基礎候補
+      const cands = Object.values(baseTasks)
+        .filter(t => t.score <= targetIdx && t.score + bonus >= targetIdx);
 
       res.innerHTML += `<div class="section"><b>基礎提出物の候補（①～⑤）:</b><br>` +
-        (cands.length ? cands.map(t => `<a href="${t.url}" target="_blank">${t.text}</a>`).join("<br>") : "該当する提出物がありません") +
+        (cands.length
+          ? cands.map(t => `<a href="${t.url}" target="_blank">${t.text}</a>（${t.rank}）`).join("<br>")
+          : "該当する提出物がありません"
+        ) +
       `</div>`;
 
-      if (combos.length) {
-        res.innerHTML += `<div class="section"><b>組み合わせでS取得:</b><br>` +
-          combos.map(p => baseTasks[p[0]].text + ' ＋ ' + baseTasks[p[1]].text).join("<br>") +
-        `</div>`;
+      // S取得組み合わせ（目標=S の場合）
+      if (target === "S") {
+        const combos = [
+          `<a href="${baseTasks[3].url}" target="_blank">③</a> ＋ <a href="${baseTasks[3].url}" target="_blank">③</a>`,
+          `<a href="${baseTasks[4].url}" target="_blank">④</a> ＋ <a href="${baseTasks[4].url}" target="_blank">④</a>`,
+          `<a href="${baseTasks[3].url}" target="_blank">③</a> ＋ <a href="${baseTasks[4].url}" target="_blank">④</a>`
+        ];
+        res.innerHTML += `<div class="section"><b>組み合わせでS取得:</b><br>${combos.join("<br>")}</div>`;
       }
 
-      res.innerHTML += `<div class="section"><b>ランクアップ:</b><br>` +
+      // ランクアップ要因
+      res.innerHTML += `<div class="section"><b>ランクアップ要因:</b><br>` +
         (plusLabels.length ? plusLabels.join("<br>") : "なし") +
       `</div>`;
 
-      const graph = ranks.map(r =>
-        r === target
+      // 矢印グラフ：目標ランクのみ赤
+      const graph = ranks
+        .map(r => r === target
           ? `<span class="active-rank">${r}</span>`
           : `<span>${r}</span>`
-      ).join(" → ");
+        )
+        .join(" → ");
       res.innerHTML += `<div class="rank-graph">${graph}</div>`;
+
       res.innerHTML += `<div class="section"><b>→ 目標の<span class="active-rank">${target}</span>以上の成績を獲得できます！</b></div>`;
     }
 
+    // Step2 ラジオトグル解除
     let last1 = null, last2 = null;
     document.querySelectorAll('input[name="group1"]').forEach(radio => {
       radio.addEventListener('click', function() {
