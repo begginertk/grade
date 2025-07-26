@@ -7,9 +7,9 @@
     body { font-family: sans-serif; text-align: center; padding: 30px; }
     .step { display: none; }
     .step.active { display: block; }
-    button { padding: 10px 20px; margin: 20px; font-size: 16px; }
     .option-group { margin: 20px 0; text-align: left; display: inline-block; }
     label { display: block; margin: 6px 0; cursor: pointer; }
+    button { display: block; margin: 20px auto; padding: 10px 20px; font-size: 16px; }
     .error { color: red; margin-top: 10px; }
     #result div { margin: 10px 0; text-align: left; display: inline-block; }
     .rank-graph { font-size: 1.5em; letter-spacing: 0.6em; margin: 20px 0; }
@@ -34,25 +34,17 @@
     <div id="error1" class="error"></div>
   </div>
 
-  <!-- Step 2: ランクアップ条件選択（バリデーションなし） -->
+  <!-- Step 2: ランクアップ条件選択 -->
   <div class="step" id="step2">
     <h2>Step 2: ランクアップ条件を選んでください</h2>
     <div class="option-group">
       <h3>⑥ or ⑦</h3>
-      <label><input type="radio" name="group1" value="1">
-        ⑥ 06/16の特別講義にオンラインで参加した感想約200字を提出
-      </label>
-      <label><input type="radio" name="group1" value="2">
-        ⑦ 06/16の特別講義に教室で参加した感想約200字を提出
-      </label>
+      <label><input type="radio" name="group1" value="1"> ⑥ 06/16の特別講義にオンラインで参加した感想約200字を提出</label>
+      <label><input type="radio" name="group1" value="2"> ⑦ 06/16の特別講義に教室で参加した感想約200字を提出</label>
 
       <h3>⑧ or ⑨</h3>
-      <label><input type="radio" name="group2" value="1">
-        ⑧ 07/21の講義に参加した感想約200字を提出
-      </label>
-      <label><input type="radio" name="group2" value="2">
-        ⑨ 07/21の講義に参加してチャットに質問した内容を提出
-      </label>
+      <label><input type="radio" name="group2" value="1"> ⑧ 07/21の講義に参加した感想約200字を提出</label>
+      <label><input type="radio" name="group2" value="2"> ⑨ 07/21の講義に参加してチャットに質問した内容を提出</label>
     </div>
     <button onclick="goToStep(3)">次へ</button>
   </div>
@@ -72,7 +64,6 @@
       4: { text: "④ 講義で紹介したモデルを拡張する", score: 3, rank: "A" },
       5: { text: "⑤ 講義中に発言した人はいつどのような発言をしたかを約200字にまとめて提出", score: 4, rank: "S" }
     };
-
     const plusItems = {
       group1: {
         1: { text: "⑥ 06/16の特別講義にオンラインで参加した感想約200字を提出", up: 1 },
@@ -83,7 +74,6 @@
         2: { text: "⑨ 07/21の講義に参加してチャットに質問した内容を提出", up: 2 }
       }
     };
-
     const ranks = ["D","C","B","A","S"];
 
     function validateStep1() {
@@ -94,7 +84,7 @@
         return;
       }
       err.innerText = "";
-      // C または D はランクアップ不要で直接 Step 3 へ
+      // C または D は Step2 をスキップ
       if (sel.value === "C" || sel.value === "D") {
         goToStep(3);
       } else {
@@ -157,12 +147,35 @@
       );
 
       res.innerHTML = `
-        <div><b>基礎提出物候補（①～⑤）:</b><br>${baseMsg}</div>
+        <div><b>基礎提出物の候補（①～⑤）:</b><br>${baseMsg}</div>
         <div style="margin-top:12px;"><b>ランクアップ:</b><br>${plusMsg}</div>
         <div class="rank-graph">${graph}</div>
         <div><b>→ 目標の<span class="active-rank">${target}</span>を獲得できます！</b></div>
       `;
     }
+
+    // Step2 のラジオをもう一度クリックで解除できるように
+    let last1 = null, last2 = null;
+    document.querySelectorAll('input[name="group1"]').forEach(radio => {
+      radio.addEventListener('click', function() {
+        if (last1 === this) {
+          this.checked = false;
+          last1 = null;
+        } else {
+          last1 = this;
+        }
+      });
+    });
+    document.querySelectorAll('input[name="group2"]').forEach(radio => {
+      radio.addEventListener('click', function() {
+        if (last2 === this) {
+          this.checked = false;
+          last2 = null;
+        } else {
+          last2 = this;
+        }
+      });
+    });
   </script>
 </body>
 </html>
