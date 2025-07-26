@@ -13,7 +13,7 @@
       line-height: 1.5;
     }
     h1 {
-      font-size: 26px; /* 少し小さめに調整 */
+      font-size: 26px; /* 少し小さめ */
       margin-bottom: 10px;
     }
     .step { display: none; }
@@ -66,9 +66,13 @@
       font-size: 1.6em;
       margin: 20px 0;
     }
-    /* ランク色は削除、目標のみ赤強調 */
+    /* 目標成績だけ赤にする色付け */
+    .color-D { color: #8B8B8B; }
+    .color-C { color: #D35400; }
+    .color-B { color: #3498DB; }
+    .color-A { color: #E74C3C; }
+    .color-S { color: #F39C12; }
     .active-rank {
-      color: red;
       font-weight: bold;
       text-decoration: underline;
     }
@@ -127,7 +131,7 @@
     <h2>Step 3: 出すべき課題と取れる成績</h2>
     <div id="result"></div>
     <div class="button-group">
-      <button onclick="goToStep(2)">戻る</button>
+      <button id="step3-back" onclick="goToStep(2)">戻る</button>
       <button onclick="location.reload()">最初に戻る</button>
     </div>
   </div>
@@ -178,80 +182,8 @@
       const res = document.getElementById("result");
       res.innerHTML = "";
 
-      // Dの場合
+      // D の場合
       if (target === "D") {
         res.innerHTML += `<div class="section">何も提出しないでください。お疲れ様でした。</div>`;
         const graphD = ranks
-          .map(r => `<span${r===target?' class="active-rank"':''}>${r}</span>`)
-          .join(" → ");
-        res.innerHTML += `<div class="rank-graph">${graphD}</div>`;
-        return;
-      }
-
-      // 加点集計
-      let bonus = 0, plusLabels = [];
-      ["group1","group2"].forEach(g => {
-        const sel = document.querySelector(`input[name="${g}"]:checked`);
-        if (sel) {
-          const it = plusItems[g][sel.value];
-          bonus += it.up;
-          plusLabels.push(`<a href="${it.url}" target="_blank">${it.text}</a>（${it.up}ランクアップ）`);
-        }
-      });
-      bonus = Math.min(bonus, 3);
-
-      // 基礎候補
-      const cands = Object.values(baseTasks)
-        .filter(t => t.score <= targetIdx && t.score + bonus >= targetIdx);
-
-      res.innerHTML += `<div class="section"><b>基礎提出物の候補（①～⑤）:</b><br>` +
-        (cands.length
-          ? cands.map(t => `<a href="${t.url}" target="_blank">${t.text}</a>（${t.rank}）`).join("<br>")
-          : "該当する提出物がありません"
-        ) +
-      `</div>`;
-
-      // S取得組み合わせ（目標=S の場合）
-      if (target === "S") {
-        const combos = [
-          `<a href="${baseTasks[3].url}" target="_blank">③</a> ＋ <a href="${baseTasks[3].url}" target="_blank">③</a>`,
-          `<a href="${baseTasks[4].url}" target="_blank">④</a> ＋ <a href="${baseTasks[4].url}" target="_blank">④</a>`,
-          `<a href="${baseTasks[3].url}" target="_blank">③</a> ＋ <a href="${baseTasks[4].url}" target="_blank">④</a>`
-        ];
-        res.innerHTML += `<div class="section"><b>組み合わせでS取得:</b><br>${combos.join("<br>")}</div>`;
-      }
-
-      // ランクアップ要因
-      res.innerHTML += `<div class="section"><b>ランクアップ要因:</b><br>` +
-        (plusLabels.length ? plusLabels.join("<br>") : "なし") +
-      `</div>`;
-
-      // 矢印グラフ：目標ランクのみ赤
-      const graph = ranks
-        .map(r => r === target
-          ? `<span class="active-rank">${r}</span>`
-          : `<span>${r}</span>`
-        )
-        .join(" → ");
-      res.innerHTML += `<div class="rank-graph">${graph}</div>`;
-
-      res.innerHTML += `<div class="section"><b>→ 目標の<span class="active-rank">${target}</span>以上の成績を獲得できます！</b></div>`;
-    }
-
-    // Step2 ラジオトグル解除
-    let last1 = null, last2 = null;
-    document.querySelectorAll('input[name="group1"]').forEach(radio => {
-      radio.addEventListener('click', function() {
-        if (last1 === this) { this.checked = false; last1 = null; }
-        else last1 = this;
-      });
-    });
-    document.querySelectorAll('input[name="group2"]').forEach(radio => {
-      radio.addEventListener('click', function() {
-        if (last2 === this) { this.checked = false; last2 = null; }
-        else last2 = this;
-      });
-    });
-  </script>
-</body>
-</html>
+          .map(r => `<span${r===target?' cla
