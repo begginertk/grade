@@ -186,4 +186,81 @@
       if (target === "D") {
         res.innerHTML += `<div class="section">何も提出しないでください。お疲れ様でした。</div>`;
         const graphD = ranks
-          .map(r => `<span${r===target?' cla
+          .map(r => `<span${r===target?' class="active-rank color-'+r+'"':''}>${r}</span>`)
+          .join(" → ");
+        res.innerHTML += `<div class="rank-graph">${graphD}</div>`;
+      } else {
+        // 加点集計
+        let bonus = 0, plusLabels = [];
+        ["group1","group2"].forEach(g => {
+          const sel = document.querySelector(`input[name="${g}"]:checked`);
+          if (sel) {
+            const it = plusItems[g][sel.value];
+            bonus += it.up;
+            plusLabels.push(`<a href="${it.url}" target="_blank">${it.text}</a>（${it.up}ランクアップ）`);
+          }
+        });
+        bonus = Math.min(bonus, 3);
+
+        // 基礎候補
+        const cands = Object.values(baseTasks)
+          .filter(t => t.score <= targetIdx && t.score + bonus >= targetIdx);
+
+        res.innerHTML += `<div class="section"><b>基礎提出物の候補（①～⑤）:</b><br>` +
+          (cands.length
+            ? cands.map(t => `<a href="${t.url}" target="_blank">${t.text}</a>（${t.rank}）`).join("<br>")
+            : "該当する提出物がありません"
+          ) +
+        `</div>`;
+
+        // S取得組み合わせ
+        if (target === "S") {
+          const combos = [
+            `③×2: <a href="${baseTasks[3].url}" target="_blank">③</a>＋<a href="${baseTasks[3].url}" target="_blank">③</a>`,
+            `④×2: <a href="${baseTasks[4].url}" target="_blank">④</a>＋<a href="${baseTasks[4].url}" target="_blank">④</a>`,
+            `③＋④: <a href="${baseTasks[3].url}" target="_blank">③</a>＋<a href="${baseTasks[4].url}" target="_blank">④</a>`
+          ];
+          res.innerHTML += `<div class="section"><b>組み合わせでS取得:</b><br>${combos.join("<br>")}</div>`;
+        }
+
+        // ランクアップ
+        res.innerHTML += `<div class="section"><b>ランクアップ:</b><br>` +
+          (plusLabels.length ? plusLabels.join("<br>") : "なし") +
+        `</div>`;
+
+        // 矢印グラフ：目標のみ色付き
+        const graph = ranks
+          .map(r => r === target
+            ? `<span class="active-rank color-${r}">${r}</span>`
+            : `<span>${r}</span>`
+          ).join(" → ");
+        res.innerHTML += `<div class="rank-graph">${graph}</div>`;
+        res.innerHTML += `<div class="section"><b>→ 目標の<span class="active-rank color-${target}">${target}</span>以上の成績を獲得できます！</b></div>`;
+      }
+
+      // 「戻る」ボタンの表示制御
+      const backBtn = document.getElementById("step3-back");
+      if (["C","D"].includes(target)) {
+        backBtn.style.display = "none";
+      } else {
+        backBtn.style.display = "inline-block";
+      }
+    }
+
+    // Step2 ラジオトグル解除
+    let last1 = null, last2 = null;
+    document.querySelectorAll('input[name="group1"]').forEach(radio => {
+      radio.addEventListener('click', function() {
+        if (last1 === this) { this.checked = false; last1 = null; }
+        else last1 = this;
+      });
+    });
+    document.querySelectorAll('input[name="group2"]').forEach(radio => {
+      radio.addEventListener('click', function() {
+        if (last2 === this) { this.checked = false; last2 = null; }
+        else last2 = this;
+      });
+    });
+  </script>
+</body>
+</html>
