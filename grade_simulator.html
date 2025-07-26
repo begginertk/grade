@@ -31,7 +31,7 @@
       color: #000;
     }
     input[type="radio"] {
-      width: 1.2em; height: 1.2em;
+      width: 1.6em; height: 1.6em;
       vertical-align: middle;
       margin-right: 8px;
     }
@@ -45,7 +45,7 @@
     .grade-D { color: gray; }
 
     .button-group {
-      margin: 20px 0;
+      margin: 24px 0;
     }
     .button-group button {
       padding: 12px 24px;
@@ -183,34 +183,38 @@
 
     const ranks = ["D", "C", "B", "A", "S"];
 
-    function validateStep1() {
-      const sel = document.querySelector('input[name="grade"]:checked');
-      const err = document.getElementById("error1");
-      if (!sel) { err.innerText = "⚠️ 成績を選択してください"; return; }
-      err.innerText = "";
-      if (sel.value === "C" || sel.value === "D") goToStep(3);
-      else goToStep(2);
-    }
+  function validateStep1() {
+  const sel = document.querySelector('input[name="grade"]:checked');
+  const err = document.getElementById("error1");
+  if (!sel) {
+    err.innerText = "⚠️ 成績を選択してください";
+    return;
+  }
+  err.innerText = "";
+  const val = sel.value;
+  if (val === "C" || val === "D") {
+    goToStep(3); // ★Step2をスキップして3へ直行★
+  } else {
+    goToStep(2);
+  }
+}
+function showResult() {
+  const target = document.querySelector('input[name="grade"]:checked').value;
+  const res = document.getElementById("result");
 
-    function goToStep(n) {
-      document.querySelectorAll(".step").forEach(e => e.classList.remove("active"));
-      document.getElementById("step" + n).classList.add("active");
-      if (n === 3) showResult();
-    }
+  if (target === "D" || target === "C") {
+    res.innerHTML = `<div class="section">何も提出しないでください。お疲れ様でした。</div>`;
+    const graph = ranks.map(r =>
+      `<span${r === target ? ` class="active-rank grade-${r}"` : ``}>${r}</span>`
+    ).join(" → ");
+    res.innerHTML += `<div class="rank-graph">${graph}</div>`;
+    document.getElementById("step3-back").style.display = "none"; // ★「戻る」ボタンを非表示★
+    return;
+  }
 
-    function showResult() {
-      const target = document.querySelector('input[name="grade"]:checked').value;
-      const idx = ranks.indexOf(target);
-      const res = document.getElementById("result");
-      res.innerHTML = "";
+  document.getElementById("step3-back").style.display = "inline-block"; // 他の成績では表示
+}
 
-      if (target === "D") {
-        res.innerHTML += `<div class="section">何も提出しないでください。お疲れ様でした。</div>`;
-        const graph = ranks.map(r => `<span${r === target ? ` class="active-rank grade-${r}"` : ``}>${r}</span>`).join(" → ");
-        res.innerHTML += `<div class="rank-graph">${graph}</div>`;
-        document.getElementById("step3-back").style.display = "none";
-        return;
-      }
 
       let bonus = 0, pls = [];
       ["group1", "group2"].forEach(g => {
