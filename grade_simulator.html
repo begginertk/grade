@@ -1,3 +1,4 @@
+<canvas-doc>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -107,24 +108,24 @@
       <h3>⑥ or ⑦</h3>
       <label><input type="radio" name="group1" value="1">
         <a href="https://lms.keio.jp/courses/112700/modules/items/5241473" target="_blank">
-          ⑥ 06/16の特別講義(オンライン参加)の感想約200字
+          ⑥ 06/16の特別講義にオンラインで参加した感想約200字を提出
         </a>
       </label>
       <label><input type="radio" name="group1" value="2">
         <a href="https://lms.keio.jp/courses/112700/modules/items/5241474" target="_blank">
-          ⑦ 06/16の特別講義(教室参加)の感想約200字
+          ⑦ 06/16の特別講義に教室で参加した感想約200字を提出
         </a>
       </label>
 
       <h3>⑧ or ⑨</h3>
       <label><input type="radio" name="group2" value="1">
         <a href="https://lms.keio.jp/courses/112700/modules/items/5241476" target="_blank">
-          ⑧ 07/21の講義の感想約200字
+          ⑧ 07/21の講義に参加した感想約200字を提出
         </a>
       </label>
       <label><input type="radio" name="group2" value="2">
         <a href="https://lms.keio.jp/courses/112700/modules/items/5241477" target="_blank">
-          ⑨ 07/21の講義の質問の内容
+          ⑨ 07/21の講義に参加してチャットに質問した人はその内容を提出
         </a>
       </label>
     </div>
@@ -145,32 +146,40 @@
   </div>
 
   <script>
-    const plusItems = {
-      group1: {
-        1: {
-          text: "06/16の特別講義(オンライン参加)の感想約200字",
-          up: 1,
-          url: "https://lms.keio.jp/courses/112700/modules/items/5241473"
-        },
-        2: {
-          text: "06/16の特別講義(教室参加)の感想約200字",
-          up: 2,
-          url: "https://lms.keio.jp/courses/112700/modules/items/5241474"
-        }
-      },
-      group2: {
-        1: {
-          text: "07/21の講義の感想約200字",
-          up: 1,
-          url: "https://lms.keio.jp/courses/112700/modules/items/5241476"
-        },
-        2: {
-          text: "07/21の講義の質問の内容",
-          up: 2,
-          url: "https://lms.keio.jp/courses/112700/modules/items/5241477"
-        }
-      }
+    const baseTasks = {
+      1: { text: "① 講義の感想約200字", score: 1, rank: "C", url: "https://lms.keio.jp/courses/112700/modules/items/5241466" },
+      2: { text: "② 1分のPR動画", score: 2, rank: "B", url: "https://lms.keio.jp/courses/112700/modules/items/5241468" },
+      3: { text: "③ 約5分のvroid動画作成", score: 3, rank: "A", url: "https://lms.keio.jp/courses/112700/modules/items/5241619" },
+      4: { text: "④ モデルの拡張", score: 3, rank: "A", url: "https://lms.keio.jp/courses/112700/modules/items/5241619" },
+      5: { text: "⑤ 講義中の発言まとめ（約200字）", score: 4, rank: "S", url: "https://lms.keio.jp/courses/112700/modules/items/5241471" }
     };
+
+    const plusItems = {
+  group1: {
+    1: {
+      text: "06/16の特別講義(オンライン参加)の感想約200字",
+      up: 1,
+      url: "https://lms.keio.jp/courses/112700/modules/items/5241473"
+    },
+    2: {
+      text: "06/16の特別講義(教室参加)の感想約200字",
+      up: 2,
+      url: "https://lms.keio.jp/courses/112700/modules/items/5241474"
+    }
+  },
+  group2: {
+    1: {
+      text: "07/21の講義の感想約200字",
+      up: 1,
+      url: "https://lms.keio.jp/courses/112700/modules/items/5241476"
+    },
+    2: {
+      text: "07/21の講義の質問の内容",
+      up: 2,
+      url: "https://lms.keio.jp/courses/112700/modules/items/5241477"
+    }
+  }
+};
 
     const ranks = ["D", "C", "B", "A", "S"];
 
@@ -214,6 +223,24 @@
       });
       bonus = Math.min(bonus, 3);
 
+      const cands = Object.values(baseTasks)
+        .filter(t => t.score <= idx && t.score + bonus >= idx);
+
+      res.innerHTML += `<div class="section"><b>基礎提出物（①～⑤）:</b><br>` +
+        (cands.length
+          ? cands.map(t => `<a href="${t.url}" target="_blank">${t.text}</a>（${t.rank}）`).join("<br>")
+          : "該当なし"
+        ) + `</div>`;
+
+      if (target === "S") {
+        const combos = [
+          `<a href="https://lms.keio.jp/courses/112700/modules/items/5241469" target="_blank">③2つ: ③ 約5分のvroid動画作成 ×2</a>`,
+          `<a href="https://lms.keio.jp/courses/112700/modules/items/5241469" target="_blank">④2つ: ④ モデルの拡張 ×2</a>`,
+          `<a href="https://lms.keio.jp/courses/112700/modules/items/5241469" target="_blank">③＋④: ③ 約5分のvroid動画作成 + ④ モデルの拡張</a>`
+        ];
+        res.innerHTML += `<div class="section"><b>組み合わせでS取得:</b><br>${combos.join("<br>")}</div>`;
+      }
+
       res.innerHTML += `<div class="section"><b>ランクアップ:</b><br>` + (pls.length ? pls.join("<br>") : "なし") + `</div>`;
 
       const graph = ranks.map(r =>
@@ -223,8 +250,25 @@
       ).join(" → ");
       res.innerHTML += `<div class="rank-graph">${graph}</div>`;
       res.innerHTML += `<div class="section"><b>→ 目標の <span class="active-rank grade-${target}">${target}</span> 以上を獲得できます！</b></div>`;
+
       document.getElementById("step3-back").style.display = "inline-block";
     }
+
+    // トグル処理
+    let l1 = null, l2 = null;
+    document.querySelectorAll('input[name="group1"]').forEach(r => {
+      r.onclick = function () {
+        if (l1 === this) { this.checked = false; l1 = null; }
+        else l1 = this;
+      };
+    });
+    document.querySelectorAll('input[name="group2"]').forEach(r => {
+      r.onclick = function () {
+        if (l2 === this) { this.checked = false; l2 = null; }
+        else l2 = this;
+      };
+    });
   </script>
 </body>
 </html>
+</canvas-doc>
