@@ -6,81 +6,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>成績シミュレーター</title>
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding: 20px;
-      font-size: 18px;
-      line-height: 1.5;
-      color: #000;
-    }
-    h1 { font-size: 26px; margin-bottom: 10px; }
-    h2 { font-size: 14px; margin-bottom: 10px; }
-    .step { display: none; }
-    .step.active { display: block; }
-    .option-group {
-      margin: 20px 0;
-      text-align: left;
-      display: inline-block;
-    }
-    label {
-      display: block;
-      margin: 10px 0;
-      font-size: 20px;
-      cursor: pointer;
-      color: #000;
-    }
-    input[type="radio"] {
-      width: 1.6em; height: 1.6em;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-    .grade-label {
-      margin-left: 6px; font-weight: bold; font-size: 24px;
-    }
-    .grade-S { color: red; }
-    .grade-A { color: orange; }
-    .grade-B { color: green; }
-    .grade-C { color: blue; }
-    .grade-D { color: gray; }
+  body {
+    font-family: sans-serif;
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
+    line-height: 1.5;
+    color: #000;
+  }
+  h1 { font-size: 26px; margin-bottom: 10px; }
+  h2 { font-size: 14px; margin-bottom: 10px; }
+  .step { display: none; }
+  .step.active { display: block; }
+  .option-group {
+    margin: 20px 0;
+    text-align: left;
+    display: inline-block;
+  }
+  label {
+    display: block;
+    margin: 10px 0;
+    font-size: 20px;
+    cursor: pointer;
+    color: #000;
+  }
+  input[type="radio"] {
+    width: 1.6em;
+    height: 1.6em;
+    vertical-align: middle;
+    margin-right: 10px;
+  }
+  .grade-label {
+    margin-left: 6px;
+    font-weight: bold;
+    font-size: 24px;
+  }
+  .grade-S { color: red; }
+  .grade-A { color: orange; }
+  .grade-B { color: green; }
+  .grade-C { color: blue; }
+  .grade-D { color: gray; }
 
-    .button-group {
-      margin: 24px 0;
-    }
-    .button-group button {
-      padding: 12px 24px;
-      font-size: 18px;
-      margin: 0 10px;
-      border: none;
-      background: #0066cc;
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .button-group button:hover {
-      background: #0055aa;
-    }
-    .error {
-      color: red;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-    .section {
-      margin: 20px 0;
-      text-align: center;
-      display: block;
-      font-size: 18px;
-    }
-    .rank-graph {
-      font-size: 1.6em;
-      margin: 20px 0;
-    }
-    .active-rank {
-      border-bottom: 4px solid currentColor;
-      padding-bottom: 2px;
-      font-weight: bold;
-    }
-  </style>
+  .button-group {
+    margin: 24px 0;
+  }
+  .button-group button {
+    padding: 12px 24px;
+    font-size: 18px;
+    margin: 0 10px;
+    border: none;
+    background: #0066cc;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .button-group button:hover {
+    background: #0055aa;
+  }
+  .error {
+    color: red;
+    font-size: 16px;
+    margin-top: 10px;
+  }
+  .section {
+    margin: 20px 0;
+    text-align: left;
+    display: block;
+    font-size: 18px;
+  }
+  .rank-graph {
+    font-size: 1.6em;
+    margin: 20px 0;
+  }
+  .active-rank {
+    border-bottom: 4px solid currentColor;
+    padding-bottom: 2px;
+    font-weight: bold;
+  }
+
+  /* ────────────────────────── */
+  /* Step3の結果を中央寄せしつつ、
+     個別リストは左揃えにする */
+  #step3 #result {
+    text-align: center;
+  }
+  #step3 #result .section {
+    display: inline-block;
+    text-align: left;
+  }
+</style>
+
 </head>
 <body>
   <h1>成績シミュレーター</h1>
@@ -151,7 +166,7 @@
       2: { text: "② 1分のPR動画", score: 2, rank: "B", url: "https://lms.keio.jp/courses/112700/modules/items/5241468" },
       3: { text: "③ 約5分のvroid動画作成", score: 3, rank: "A", url: "https://lms.keio.jp/courses/112700/modules/items/5241619" },
       4: { text: "④ モデルの拡張", score: 3, rank: "A", url: "https://lms.keio.jp/courses/112700/modules/items/5241619" },
-      5: { text: "⑤ 講義中の発言まとめ（約200字）", score: 4, rank: "S", url: "https://lms.keio.jp/courses/112700/modules/items/5241471" }
+      5: { text: "⑤ 講義中の発言まとめ約200字", score: 4, rank: "S", url: "https://lms.keio.jp/courses/112700/modules/items/5241471" }
     };
 
     const plusItems = {
