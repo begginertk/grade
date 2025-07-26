@@ -2,40 +2,89 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>成績シミュレーター</title>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
       padding: 20px;
-      font-size: 18px; line-height: 1.5;
+      font-size: 18px;
+      line-height: 1.5;
     }
-    h1 { font-size: 24px; margin-bottom: 10px; }
-    h2 { font-size: 20px; margin-bottom: 15px; }
+    h1 {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
     .step { display: none; }
     .step.active { display: block; }
-    .option-group { margin: 20px 0; text-align: left; display: inline-block; }
-    label { display: block; margin: 10px 0; font-size: 20px; cursor: pointer; }
-    input[type=radio] { width: 1.2em; height: 1.2em; vertical-align: middle; margin-right: 8px; }
-    .button-group { margin: 20px 0; }
-    .button-group button {
-      padding: 12px 24px; font-size: 20px;
-      margin: 0 10px; border: none;
-      background: #0066cc; color: white; border-radius: 4px;
+    .option-group {
+      margin: 20px 0;
+      text-align: left;
+      display: inline-block;
+    }
+    label {
+      display: block;
+      margin: 10px 0;
+      font-size: 20px;
       cursor: pointer;
     }
-    .button-group button:hover { background: #0055aa; }
-    .error { color: red; font-size: 16px; margin-top: 10px; }
-    .section { margin: 20px 0; text-align: left; font-size: 18px; }
-    .rank-graph { font-size: 1.6em; margin: 20px 0; }
-    /* 目標成績だけ固有色 */
-    .color-D { color: gray; }
-    .color-C { color: #3498db; }
-    .color-B { color: #2ecc71; }
-    .color-A { color: #e67e22; }
-    .color-S { color: #e84393; }
-    .active-rank { font-weight: bold; text-decoration: underline; }
+    input[type="radio"] {
+      width: 1.2em; height: 1.2em;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    /* Step1 の色付きラベル */
+    .grade-label {
+      font-weight: bold;
+      margin-left: 6px;
+    }
+    .grade-S { color: #F39C12; }
+    .grade-A { color: #E74C3C; }
+    .grade-B { color: #3498DB; }
+    .grade-C { color: #D35400; }
+    .grade-D { color: #8B8B8B; }
+
+    .button-group {
+      margin: 20px 0;
+    }
+    .button-group button {
+      padding: 12px 24px;
+      font-size: 20px;
+      margin: 0 10px;
+      border: none;
+      background: #0066cc;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .button-group button:hover {
+      background: #0055aa;
+    }
+    .error {
+      color: red;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    .section {
+      margin: 20px 0;
+      text-align: left;
+      display: block;
+      font-size: 18px;
+    }
+    .rank-graph {
+      font-size: 1.6em;
+      margin: 20px 0;
+    }
+    /* 強調ボーダー下線 */
+    .active-rank {
+      text-decoration: none;
+      border-bottom: 4px solid currentColor;
+      padding-bottom: 2px;
+      font-weight: bold;
+    }
+    /* Step2 見出し改行制御 */
+    .heading-line { display: block; }
   </style>
 </head>
 <body>
@@ -45,11 +94,26 @@
   <div class="step active" id="step1">
     <h2>Step 1: 取りたい成績を選んでください</h2>
     <div class="option-group">
-      <label><input type="radio" name="grade" value="S"> S</label>
-      <label><input type="radio" name="grade" value="A"> A</label>
-      <label><input type="radio" name="grade" value="B"> B</label>
-      <label><input type="radio" name="grade" value="C"> C</label>
-      <label><input type="radio" name="grade" value="D"> D</label>
+      <label>
+        <input type="radio" name="grade" value="S">
+        <span class="grade-label grade-S">S</span>
+      </label>
+      <label>
+        <input type="radio" name="grade" value="A">
+        <span class="grade-label grade-A">A</span>
+      </label>
+      <label>
+        <input type="radio" name="grade" value="B">
+        <span class="grade-label grade-B">B</span>
+      </label>
+      <label>
+        <input type="radio" name="grade" value="C">
+        <span class="grade-label grade-C">C</span>
+      </label>
+      <label>
+        <input type="radio" name="grade" value="D">
+        <span class="grade-label grade-D">D</span>
+      </label>
     </div>
     <div class="button-group">
       <button onclick="validateStep1()">次へ</button>
@@ -59,34 +123,28 @@
 
   <!-- Step 2 -->
   <div class="step" id="step2">
-    <h2>Step 2: ランクアップ条件を選んでください</h2>
+    <h2>
+      <span class="heading-line">Step 2: ランクアップ条件</span>
+      <span class="heading-line">を選んでください</span>
+    </h2>
     <div class="option-group">
       <h3>⑥ or ⑦</h3>
       <label>
         <input type="radio" name="group1" value="1">
-        <a href="https://lms.keio.jp/courses/112700/modules/items/5241473" target="_blank">
-          ⑥ 06/16の特別講義にオンラインで参加した感想約200字を提出
-        </a>
+        <a href="https://example.com/submit/online" target="_blank">⑥ 特別講義オンライン感想提出</a>
       </label>
       <label>
         <input type="radio" name="group1" value="2">
-        <a href="https://lms.keio.jp/courses/112700/modules/items/5241474" target="_blank">
-          ⑦ 06/16の特別講義に教室で参加した感想約200字を提出
-        </a>
+        <a href="https://example.com/submit/classroom" target="_blank">⑦ 特別講義教室感想提出</a>
       </label>
-
       <h3>⑧ or ⑨</h3>
       <label>
         <input type="radio" name="group2" value="1">
-        <a href="https://lms.keio.jp/courses/112700/modules/items/5241476" target="_blank">
-          ⑧ 07/21の講義に参加した感想約200字を提出
-        </a>
+        <a href="https://example.com/submit/final-reflection" target="_blank">⑧ 最終講義感想提出</a>
       </label>
       <label>
         <input type="radio" name="group2" value="2">
-        <a href="https://lms.keio.jp/courses/112700/modules/items/5241477" target="_blank">
-          ⑨ 07/21の講義に参加してチャットに質問した人はその内容を提出
-        </a>
+        <a href="https://example.com/submit/chat-question" target="_blank">⑨ 質問チャット提出</a>
       </label>
     </div>
     <div class="button-group">
@@ -107,57 +165,54 @@
 
   <script>
     const baseTasks = {
-      1: { text: "① 春学期の講義の感想約200字を提出", score: 1, rank: "C", url: "https://lms.keio.jp/courses/112700/modules/items/5241466" },
-      2: { text: "② 動画による1分PR", score: 2, rank: "B", url: "https://lms.keio.jp/courses/112700/modules/items/5241468" },
-      3: { text: "③ vroidを用いた5分動画作成", score: 3, rank: "A", url: "https://lms.keio.jp/courses/112700/modules/items/5241619" },
-      4: { text: "④ モデルの拡張", score: 3, rank: "A", url: "https://lms.keio.jp/courses/112700/modules/items/5241619" },
-      5: { text: "⑤ 講義中の発言の約200字のまとめ", score: 4, rank: "S", url: "https://lms.keio.jp/courses/112700/modules/items/5241471"  }
+      1: { text: "① 春学期の講義の感想約200字を提出", score:1, rank:"C", url:"https://example.com/submit/reflection" },
+      2: { text: "② 動画による1分PR", score:2, rank:"B", url:"https://example.com/submit/pr-video" },
+      3: { text: "③ VRoidを用いた5分動画作成", score:3, rank:"A", url:"https://example.com/submit/vroid-video" },
+      4: { text: "④ モデルを拡張する", score:3, rank:"A", url:"https://example.com/submit/model-extension" },
+      5: { text: "⑤ 発言まとめ（約200字）を提出", score:4, rank:"S", url:"https://example.com/submit/speech-summary" }
     };
 
     const plusItems = {
       group1: {
-        1: { text: "⑥ 06/16の特別講義にオンラインで参加した感想約200字を提出", up: 1, url: "https://lms.keio.jp/courses/112700/modules/items/5241473" },
-        2: { text: "⑦ 06/16の特別講義に教室で参加した感想約200字を提出", up: 2, url: "https://lms.keio.jp/courses/112700/modules/items/5241474" }
+        1:{ text:"⑥ オンライン感想", up:1, url:"https://example.com/submit/online"},
+        2:{ text:"⑦ 教室感想",     up:2, url:"https://example.com/submit/classroom"}
       },
       group2: {
-        1: { text: "⑧ 07/21の講義に参加した感想約200字を提出", up: 1, url: "https://lms.keio.jp/courses/112700/modules/items/5241476" },
-        2: { text: "⑨ 07/21の講義に参加してチャットに質問した人はその内容を提出", up: 2, url: "https://lms.keio.jp/courses/112700/modules/items/5241477" }
+        1:{ text:"⑧ 最終講義感想", up:1, url:"https://example.com/submit/final-reflection"},
+        2:{ text:"⑨ 質問チャット", up:2, url:"https://example.com/submit/chat-question"}
       }
     };
 
-    // 組み合わせS取得用リンク
-    const comboUrl = "https://lms.keio.jp/courses/112700/modules/items/5241469";
     const ranks = ["D","C","B","A","S"];
 
     function validateStep1() {
-      const sel = document.querySelector('input[name="grade"]:checked');
-      const err = document.getElementById("error1");
-      if (!sel) { err.innerText = "⚠️ 成績を選択してください"; return; }
-      err.innerText = "";
-      if (sel.value==="C"||sel.value==="D") goToStep(3);
+      const sel=document.querySelector('input[name="grade"]:checked');
+      const err=document.getElementById("error1");
+      if(!sel){ err.innerText="⚠️ 成績を選択してください"; return; }
+      err.innerText="";
+      if(sel.value==="C"||sel.value==="D") goToStep(3);
       else goToStep(2);
     }
 
     function goToStep(n) {
       document.querySelectorAll(".step").forEach(e=>e.classList.remove("active"));
       document.getElementById("step"+n).classList.add("active");
-      if (n===3) showResult();
+      if(n===3) showResult();
     }
 
     function showResult() {
-      const target = document.querySelector('input[name="grade"]:checked').value;
-      const targetIdx = ranks.indexOf(target);
-      const res = document.getElementById("result");
-      res.innerHTML = "";
+      const target=document.querySelector('input[name="grade"]:checked').value;
+      const targetIdx=ranks.indexOf(target);
+      const res=document.getElementById("result");
+      res.innerHTML="";
 
-      if (target==="D") {
+      if(target==="D") {
         res.innerHTML+=`<div class="section">何も提出しないでください。お疲れ様でした。</div>`;
-        const gD = ranks.map(r=>
+        const graph=ranks.map(r=>
           `<span${r===target?` class="active-rank color-${r}"`:``}>${r}</span>`
         ).join(" → ");
-        res.innerHTML+=`<div class="rank-graph">${gD}</div>`;
+        res.innerHTML+=`<div class="rank-graph">${graph}</div>`;
       } else {
-        // ボーナス計算
         let bonus=0, plusLabels=[];
         ["group1","group2"].forEach(g=>{
           const sel=document.querySelector(`input[name="${g}"]:checked`);
@@ -169,35 +224,31 @@
         });
         bonus=Math.min(bonus,3);
 
-        // 基礎提出物候補
-        const cands=Object.values(baseTasks).filter(t=>
-          t.score<=targetIdx && t.score+bonus>=targetIdx
-        );
+        const cands=Object.values(baseTasks)
+          .filter(t=>t.score<=targetIdx && t.score+bonus>=targetIdx);
+
         res.innerHTML+=`<div class="section"><b>基礎提出物の候補（①～⑤）:</b><br>`+
           (cands.length
             ? cands.map(t=>
-                t.url
-                  ? `<a href="${t.url}" target="_blank">${t.text}</a>（${t.rank}）`
-                  : `${t.text}（${t.rank}）`
+                `<a href="${t.url}" target="_blank">${t.text}</a>（${t.rank}）`
               ).join("<br>")
             : "該当する提出物がありません"
-          )+`</div>`;
+          )+
+        `</div>`;
 
-        // S取得組み合わせ
         if(target==="S"){
           const combos=[
-            `<a href="${comboUrl}" target="_blank">③×2</a>: vroidを用いた5分動画作成 ×2`,
-            `<a href="${comboUrl}" target="_blank">④×2</a>: モデルの拡張 ×2`,
-            `<a href="${comboUrl}" target="_blank">③＋④</a>: vroid動画 ＋ モデルの拡張`
+            `③×2: <a href="${baseTasks[3].url}" target="_blank">③</a>＋<a href="${baseTasks[3].url}" target="_blank">③</a>`,
+            `④×2: <a href="${baseTasks[4].url}" target="_blank">④</a>＋<a href="${baseTasks[4].url}" target="_blank">④</a>`,
+            `③＋④: <a href="${baseTasks[3].url}" target="_blank">③</a>＋<a href="${baseTasks[4].url}" target="_blank">④</a>`
           ];
           res.innerHTML+=`<div class="section"><b>組み合わせでS取得:</b><br>${combos.join("<br>")}</div>`;
         }
 
-        // ランクアップ
         res.innerHTML+=`<div class="section"><b>ランクアップ:</b><br>`+
-          (plusLabels.length? plusLabels.join("<br>") : "なし")+`</div>`;
+          (plusLabels.length?plusLabels.join("<br>"):"なし")+
+        `</div>`;
 
-        // 成績フロー
         const graph=ranks.map(r=>
           r===target
             ? `<span class="active-rank color-${r}">${r}</span>`
@@ -207,21 +258,21 @@
         res.innerHTML+=`<div class="section"><b>→ 目標の<span class="active-rank color-${target}">${target}</span>以上の成績を獲得できます！</b></div>`;
       }
 
-      // 「戻る」制御
-      document.getElementById("step3-back").style.display =
-        (["C","D"].includes(target) ? "none" : "inline-block");
+      // 戻るボタン制御
+      const backBtn=document.getElementById("step3-back");
+      backBtn.style.display=(["C","D"].includes(target)?"none":"inline-block");
     }
 
-    // Step2 トグル解除
-    let last1=null, last2=null;
-    document.querySelectorAll('input[name="group1"]').forEach(r=>{
-      r.addEventListener('click',function(){
+    // Step2 ラジオトグル解除
+    let last1=null,last2=null;
+    document.querySelectorAll('input[name="group1"]').forEach(radio=>{
+      radio.addEventListener('click',function(){
         if(last1===this){ this.checked=false; last1=null; }
         else last1=this;
       });
     });
-    document.querySelectorAll('input[name="group2"]').forEach(r=>{
-      r.addEventListener('click',function(){
+    document.querySelectorAll('input[name="group2"]').forEach(radio=>{
+      radio.addEventListener('click',function(){
         if(last2===this){ this.checked=false; last2=null; }
         else last2=this;
       });
