@@ -325,6 +325,8 @@
         `</div>`;
         // ランクアップなし
         res.innerHTML += `<div class="section centered"><b>ランクアップ:</b><br>なし</div>`;
+          res.innerHTML += `<div class="section centered"><b>→ 目標の <span class="active-rank grade-${target}">${target}</span> を獲得できます！</b></div>`;
+
         // 数直線グラフ
         const graphC = ranks.map(r=>
           `<span${r===target?` class="active-rank grade-${r}"`:``}>${r}</span>`
