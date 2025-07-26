@@ -20,9 +20,9 @@
 <body>
   <h1>成績シミュレーター</h1>
 
-  <!-- Step 1: 目標成績選択 -->
+  <!-- Step 1 -->
   <div class="step active" id="step1">
-    <h2>Step 1: 取りたい成績を選んでください</h2>
+    <h2>Step 1: 取りたい成績を選んでください</h2>
     <div class="option-group">
       <label><input type="radio" name="grade" value="S"> S</label>
       <label><input type="radio" name="grade" value="A"> A</label>
@@ -34,30 +34,29 @@
     <div id="error1" class="error"></div>
   </div>
 
-  <!-- Step 2: 加点条件選択 -->
+  <!-- Step 2 -->
   <div class="step" id="step2">
-    <h2>Step 2: ランクアップ条件を選んでください</h2>
+    <h2>Step 2: ランクアップ条件を選んでください</h2>
     <div class="option-group">
-      <h3>⑥／⑦（必ずいずれか一つ）</h3>
+      <h3>⑥ or ⑦</h3>
       <label><input type="radio" name="group1" value="1"> ⑥ 06/16の特別講義にオンラインで参加した感想約200字を提出</label>
       <label><input type="radio" name="group1" value="2"> ⑦ 06/16の特別講義に教室で参加した感想約200字を提出</label>
-      <h3>⑧／⑨（必ずいずれか一つ）</h3>
+
+      <h3>⑧ or ⑨</h3>
       <label><input type="radio" name="group2" value="1"> ⑧ 07/21の講義に参加した感想約200字を提出</label>
       <label><input type="radio" name="group2" value="2"> ⑨ 07/21の講義に参加してチャットに質問した内容を提出</label>
     </div>
-    <button onclick="validateStep2()">次へ</button>
-    <div id="error2" class="error"></div>
+    <button onclick="goToStep(3)">次へ</button>
   </div>
 
-  <!-- Step 3: 提案表示 -->
+  <!-- Step 3 -->
   <div class="step" id="step3">
-    <h2>Step 3: 提出すべき課題と到達イメージ</h2>
+    <h2>Step 3: 提出すべき課題と到達イメージ</h2>
     <div id="result"></div>
     <button onclick="location.reload()">最初に戻る</button>
   </div>
 
   <script>
-    // ①～⑤タスクの定義
     const baseTasks = {
       1: { text: "① 春学期の講義の感想約200字を提出", score: 1, rank: "C" },
       2: { text: "② 動画による1分PR", score: 2, rank: "B" },
@@ -66,51 +65,37 @@
       5: { text: "⑤ 講義中に発言した人はいつどのような発言をしたかを約200字にまとめて提出", score: 4, rank: "S" }
     };
 
-    // ⑥～⑨の加点定義
     const plusItems = {
       group1: {
         1: { text: "⑥ 06/16の特別講義にオンラインで参加した感想約200字を提出", up: 1 },
-        2: { text: "⑦ 06/16の特別講義に教室で参加した感想約200字を提出",       up: 2 }
+        2: { text: "⑦ 06/16の特別講義に教室で参加した感想約200字を提出", up: 2 }
       },
       group2: {
-        1: { text: "⑧ 07/21の講義に参加した感想約200字を提出",                   up: 1 },
-        2: { text: "⑨ 07/21の講義に参加してチャットに質問した内容を提出",       up: 2 }
+        1: { text: "⑧ 07/21の講義に参加した感想約200字を提出", up: 1 },
+        2: { text: "⑨ 07/21の講義に参加してチャットに質問した内容を提出", up: 2 }
       }
     };
 
     const ranks = ["D","C","B","A","S"];
 
-    // Step1検証
     function validateStep1() {
       const sel = document.querySelector('input[name="grade"]:checked');
-      const e = document.getElementById("error1");
-      if (!sel) { e.innerText = "⚠️ 成績を選択してください"; return; }
-      e.innerText = "";
+      const err = document.getElementById("error1");
+      if (!sel) {
+        err.innerText = "⚠️ 成績を選択してください";
+        return;
+      }
+      err.innerText = "";
       if (sel.value === "D") goToStep(3);
       else goToStep(2);
     }
 
-    // Step2検証
-    function validateStep2() {
-      const g1 = document.querySelector('input[name="group1"]:checked');
-      const g2 = document.querySelector('input[name="group2"]:checked');
-      const e = document.getElementById("error2");
-      if (!g1 || !g2) {
-        e.innerText = "⚠️ ⑥／⑦と⑧／⑨の両方から、必ず1つずつ選んでください";
-        return;
-      }
-      e.innerText = "";
-      goToStep(3);
-    }
-
-    // 画面切り替え
     function goToStep(n) {
       document.querySelectorAll(".step").forEach(el => el.classList.remove("active"));
       document.getElementById("step" + n).classList.add("active");
       if (n === 3) showResult();
     }
 
-    // Step3提案＆グラフ表示
     function showResult() {
       const target = document.querySelector('input[name="grade"]:checked').value;
       const targetIdx = ranks.indexOf(target);
@@ -118,47 +103,34 @@
       res.innerHTML = "";
 
       if (target === "D") {
-        res.innerHTML = `<div>何も提出しないでください。お疲れ様でした。</div>`;
+        res.innerHTML = "<div>何も提出しないでください。お疲れ様でした。</div>";
         return;
       }
 
-      // 加点計算
       let bonus = 0, plusLabels = [];
       ["group1","group2"].forEach(g => {
         const sel = document.querySelector(`input[name="${g}"]:checked`);
-        const item = plusItems[g][sel.value];
-        bonus += item.up;
-        plusLabels.push(`${item.text}（${item.up}ランクアップ）`);
+        if (sel) {
+          const item = plusItems[g][sel.value];
+          bonus += item.up;
+          plusLabels.push(`${item.text}（${item.up}ランクアップ）`);
+        }
       });
       bonus = Math.min(bonus, 3);
 
-      // ①～⑤候補：score <= targetIdx <= score+bonus
-      const single = Object.values(baseTasks)
+      const candidates = Object.values(baseTasks)
         .filter(t => t.score <= targetIdx && t.score + bonus >= targetIdx);
 
-      // S到達のための2件組合せ（③＋④）を候補に追加
-      const combo = (target === "S" && bonus === 0)
-        ? [{ text: `${baseTasks[3].text} ＋ ${baseTasks[4].text}`, rankCombo: true }]
-        : [];
+      const baseMsg = candidates.length
+        ? candidates.map(t => `${t.text}（${t.rank}）`).join("<br>")
+        : "該当する提出物がありません";
 
-      // テキスト出力
-      if (single.length) {
-        res.innerHTML += `<div><b>基礎提出物候補（①～⑤）:</b><br>` +
-          single.map(t => `${t.text}（${t.rank}）`).join("<br>") +
-          `</div>`;
-      }
-      if (combo.length) {
-        res.innerHTML += `<div style="margin-top:10px;"><b>または組み合わせ候補:</b><br>` +
-          `${combo[0].text}（S）` +
-          `</div>`;
-      }
-      res.innerHTML += `<div style="margin-top:12px;"><b>加点要因:</b><br>` +
-        plusLabels.join("<br>") +
-        `</div>`;
+      const plusMsg = plusLabels.length
+        ? plusLabels.join("<br>")
+        : "なし";
 
-      // 数直線グラフ
-      const basePos = single.length
-        ? Math.min(...single.map(t => ranks.indexOf(t.rank)))
+      const basePos = candidates.length
+        ? Math.min(...candidates.map(t => ranks.indexOf(t.rank)))
         : 0;
       let graph = "";
       for (let i = 0; i < ranks.length; i++) {
@@ -172,8 +144,12 @@
         `<span class="active-rank">$1</span>`
       );
 
-      res.innerHTML += `<div class="rank-graph">${graph}</div>` +
-        `<div><b>→ 目標の<span class="active-rank">${target}</span>を獲得できます！</b></div>`;
+      res.innerHTML = `
+        <div><b>基礎提出物候補（①～⑤）:</b><br>${baseMsg}</div>
+        <div style="margin-top:12px;"><b>加点要因:</b><br>${plusMsg}</div>
+        <div class="rank-graph">${graph}</div>
+        <div><b>→ 目標の<span class="active-rank">${target}</span>を獲得できます！</b></div>
+      `;
     }
   </script>
 </body>
