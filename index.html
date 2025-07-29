@@ -360,7 +360,7 @@
         if (s) {
           const it = plusItems[g][s.value];
           bonus += it.up;
-          pls.push(`<a href="${it.url}" target="_blank">${it.text}</a>（${it.up}ランクアップ）`);
+          pls.push(`<a href="${it.url}" target="_blank">${it.text}</a>（${it.up}↑）`);
         }
       });
       bonus = Math.min(bonus, 3);
